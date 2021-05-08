@@ -42,6 +42,7 @@
         <Compile Include="Characters\Enemy.cs" />
         <Compile Include="Characters\Monster.cs" />
         <Compile Include="Characters\Player.cs" />
+        <Compile Include="ConsoleHelper.cs" />
         <Compile Include="Items\Inventory.cs" />
         <Compile Include="Items\Item.cs" />
         <Compile Include="Program.cs" />

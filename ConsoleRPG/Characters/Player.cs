@@ -1,11 +1,16 @@
 ﻿using System;
+using ConsoleRPG.Items;
+using static System.Environment;
 
 namespace ConsoleRPG.Characters
 {
     public class Player: Character
     {
+        private Inventory inventory = new Inventory();
+        
+        
         private Random rnd = new Random();
-        protected internal int Mana { get; set; }
+        private int Mana { get; set; }
         private int MaxMana { get; set; }
         private int Experience { get; set; }
         private int ExperienceToNextLevel { get; set; }
@@ -20,14 +25,16 @@ namespace ConsoleRPG.Characters
 
         public void AttackAction(Character target)
         {
-            Console.Clear();
-            Console.WriteLine(new string('*', 20));
-            Console.WriteLine("Choose type of attack:");
+            //Console.WriteLine(new string('*', 60));
             Console.WriteLine("1 - Quick attack [always hit, normal damage]");
             Console.WriteLine("2 - Heavy blow   [chance to miss, higher damage]");
-            Console.WriteLine(new string('*', 20));
-
+            Console.Write("Choose type of attack --> ");
             var actionChoice = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            //Console.WriteLine(new string('*', 60));
+
             switch (actionChoice)
             {
                 case 1: 
@@ -43,15 +50,17 @@ namespace ConsoleRPG.Characters
 
         public void CastSpellAction(Player player, Character target)
         {
-            Console.Clear();
-            Console.WriteLine(new string('*', 20));
-            Console.WriteLine("Choose type of attack:");
+            //Console.WriteLine(new string('*', 60));
             Console.WriteLine("1 - Heal     [heal yourself (30 mana)]");
             Console.WriteLine("2 - Fireball [chance to miss, high damange (50 mana)]");
             Console.WriteLine("3 - Freeze   [chance to freeze enemy for 2-3 turns [(80 mana)]");
-            Console.WriteLine(new string('*', 20));
-            
+            Console.Write("Choose type of spell --> ");
             var actionChoice = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            //Console.WriteLine(new string('*', 60));
+
             switch (actionChoice)
             {
                 case 1:
@@ -92,7 +101,10 @@ namespace ConsoleRPG.Characters
             if (player.Mana > manaCost)
             {
                 player.Mana -= manaCost;
-                Health += Convert.ToInt32(Math.Round(MaxHealth * 0.10));
+                var healAmount = Convert.ToInt32(Math.Round(MaxHealth * 0.2));
+
+                Health += healAmount;
+                Console.WriteLine($"{player.ReturnCharacterName()} has healed himself for {healAmount} health");
             }
             
             if (Health > MaxHealth)
@@ -107,7 +119,15 @@ namespace ConsoleRPG.Characters
                 player.Mana -= manaCost;
                 if (rnd.Next(0, 100) > 10)
                 {
-                    target.Health -= Convert.ToInt32(Math.Round(player.Attack * 1.8));
+                    var damage = Convert.ToInt32(Math.Round(player.Attack * 1.8));
+                    target.Health -= damage;
+                    Console.WriteLine($"{player.ReturnCharacterName()} has used Fireball and hit enemy for {damage} damage");
+                }
+                else
+                {
+                    Console.WriteLine($"{target.ReturnCharacterName()} has dodged the attack!");
+                    
+                    
                 }
             }
         }
@@ -170,6 +190,22 @@ namespace ConsoleRPG.Characters
         public int ReturnPlayerMana()
         {
             return Mana;
+        }
+
+
+        public int ReturnPlayerMaxMana()
+        {
+            return MaxMana;
+        }
+
+        public int ReturnMaxExperience()
+        {
+            return ExperienceToNextLevel;
+        }
+
+        public int ReturnExperience()
+        {
+            return Experience;
         }
     }
 }

@@ -70,8 +70,20 @@ namespace ConsoleRPG.Characters
         public abstract void Freeze(Player player, Character target, Random rnd);
         
         
+        public int ReturnCharacterMaxHealth()
+        {
+            return MaxHealth;
+        }
 
+        public int ReturnCharacterAttack()
+        {
+            return Attack;
+        }
 
+        public int ReturnCharacterDefense()
+        {
+            return Defence;
+        }
 
         public string ReturnCharacterName()
         {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ConsoleRPG.Characters;
-using CONNECTDATA = System.Runtime.InteropServices.ComTypes.CONNECTDATA;
+
 
 namespace ConsoleRPG
 {
@@ -18,11 +18,16 @@ namespace ConsoleRPG
         
         public static void Main(string[] args)
         {
-            var rand = new Random();
+            SetupConsole();
             
-            Console.WriteLine("Welcome to Hero RPG!");
-            Console.Write("Choose name of your character: \n");
+            var rand = new Random();
+
+            ConsoleHelper.SetCurrentFont(default, 18);
+            Center("Welcome to ConsoleRPG");
+            CenterWrite("Choose name for your character: ");
+
             //var heroName = Console.ReadLine();
+           
             var heroName = "Crowans";
             
             // Creation of player's character
@@ -32,22 +37,38 @@ namespace ConsoleRPG
             var monsters = CreateMonsterList(player, rand);
             var enemy = monsters[rand.Next(0, monsters.Count - 1)];
             
-
-            Battle(player, enemy);
             
+            gameStart:
+            Console.Clear();
+            Console.WriteLine("1 - Battle");
+            Console.WriteLine("2 - View character info");
+            Console.Write("Choose your next action! --> ");
+            
+            var actionChoice = Convert.ToInt32(Console.ReadLine());
+            switch (actionChoice)
+            {
+                case 1: Battle(player, enemy);
+                    goto gameStart;
+                    
+                case 2: TextNav.ViewCharacter(player);
+                    goto gameStart;
+                        
+            }
         }
 
         private static void Battle(Player player, Monster actualEnemy)
         {
             for (var i = 0; player.IsAlive() && actualEnemy.IsAlive(); i++)
             {
-                Console.WriteLine(new string('-', 20));
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine(new string('*', 60));
                 Console.WriteLine($"Round: {i}");
                 Console.WriteLine($"{player.ReturnCharacterName()}'s health: {player.ReturnCharacterHealth()}" +
                                   $"  ||  " +
                                   $"{player.ReturnCharacterName()}'s mana: {player.ReturnPlayerMana()}");
                 Console.WriteLine($"{actualEnemy.ReturnCharacterName()}'s health: {actualEnemy.ReturnCharacterHealth()}");
-                Console.WriteLine(new string('-', 20));
+                Console.WriteLine(new string('*', 60));
 
                 if (player.IsAlive() && !player.IsStunned())
                 {
@@ -75,9 +96,9 @@ namespace ConsoleRPG
 
                 if (!player.IsAlive())
                 {
-                    Console.WriteLine(new string('*', 20));
+                    Console.WriteLine(new string('*', 40));
                     Console.WriteLine("You have died! :( ");
-                    Console.WriteLine(new string('*', 20));
+                    Console.WriteLine(new string('*', 40));
 
                 }
 
@@ -87,20 +108,21 @@ namespace ConsoleRPG
                     player.GainExperience(Convert.ToInt32(Math.Floor(actualEnemy.Health * 0.4)));
                     player.TryToLevelUp();
                     
+
                 }
             }
         }
 
         private static void PlayerBattleActions(Player player, Monster actualEnemy)
         {
-            Console.WriteLine("It's your turn! Choose your action.");
+            Console.WriteLine("It's your turn!");
             Console.WriteLine("1 - Attack");
             Console.WriteLine("2 - Cast Spell");
             Console.WriteLine("3 - Use Potion");
             Console.WriteLine("4 - Run");
+            Console.Write("Choose your action --> ");
             var actionChoice = Convert.ToInt32(Console.ReadLine());
-            Console.Clear();
-            Console.Write($"You choosed: {actionChoice} \n");
+            //Console.Clear();
 
             switch (actionChoice)
             {
@@ -177,6 +199,31 @@ namespace ConsoleRPG
             };
 
             return monsterList;
+        }
+
+        private static void SetupConsole()
+        {
+            Console.WindowWidth = 120;
+            Console.WindowHeight = 40;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+        }
+
+        public static void Center(string message)
+        {
+            var screenWidth = Console.WindowWidth;
+            var stringWidth = message.Length;
+            var consoleHeight = Console.WindowHeight;
+            var spaces = (screenWidth / 2) + (stringWidth / 2);
+            Console.WriteLine(message.PadLeft(spaces));
+        }
+        
+        public static void CenterWrite(string message)
+        {
+            var screenWidth = Console.WindowWidth;
+            var stringWidth = message.Length;
+            var spaces = (screenWidth / 2) + (stringWidth / 2);
+            Console.Write(message.PadLeft(spaces));
         }
     }
 }
