@@ -39,14 +39,18 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Characters\Character.cs" />
+        <Compile Include="Characters\Enemy.cs" />
+        <Compile Include="Characters\Monster.cs" />
         <Compile Include="Characters\Player.cs" />
         <Compile Include="Items\Inventory.cs" />
         <Compile Include="Items\Item.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="TextNav.cs" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="monster_names.txt" />
+      <Content Include="ReadME.txt" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
