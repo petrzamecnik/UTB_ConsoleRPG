@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using ConsoleRPG.Items;
 
 namespace ConsoleRPG.Characters
 {
     public abstract class Character
     {
+        public Inventory Inventory { get; set; }
+        
+        
         protected string Name { get; set; }
         protected int Level { get; set; }
         protected internal int Health { get; set; }
@@ -16,7 +21,7 @@ namespace ConsoleRPG.Characters
 
         private Random rnd = new Random();
 
-        protected Character(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer, int stunnedForXTurns)
+        protected Character(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer, int stunnedForXTurns, Inventory inventory)
         {
             Name = name;
             Level = level;
@@ -26,12 +31,16 @@ namespace ConsoleRPG.Characters
             Defence = defence;
             IsPlayer = isPlayer;
             StunnedForXTurns = stunnedForXTurns;
+            Inventory = inventory;
         }
 
         public int ReturnCharacterLevel()
         {
             return Level;
         }
+
+
+
 
         public bool IsStunned()
         {
@@ -62,7 +71,9 @@ namespace ConsoleRPG.Characters
             }
             else
             {
-                target.Health -= (Attack * 140) / 100;
+                var damage = (Attack * 140) / 100;
+                target.Health -= damage;
+                Console.WriteLine($"{Name} attacked for {damage} damage.");
             }
         }
 

@@ -21,6 +21,7 @@ namespace ConsoleRPG
             Console.WriteLine();
             Console.WriteLine();
             Center(new string('-' ,30));
+            Console.WriteLine();
             Center($"Level: {player.ReturnCharacterLevel()}");
             Center($"Maximum health: {player.ReturnCharacterMaxHealth()}");
             Center($"Actual Health: {player.ReturnCharacterHealth()}");
@@ -35,13 +36,12 @@ namespace ConsoleRPG
             Console.WriteLine();
             Center($"Experience: {player.ReturnExperience()}");
             Center($"Experience needed: {player.ReturnMaxExperience() - player.ReturnExperience()}");
+            Console.WriteLine();
             Center(new string('-' ,30));
 
 
-            while (Console.ReadKey().Key != ConsoleKey.Enter)
-            {
-                
-            }
+            while (Console.ReadKey().Key != ConsoleKey.Enter){}
+
 
         }
     }

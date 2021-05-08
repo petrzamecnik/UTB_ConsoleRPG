@@ -6,7 +6,7 @@ namespace ConsoleRPG.Characters
 {
     public class Player: Character
     {
-        private Inventory inventory = new Inventory();
+        //private Inventory Inventory = new Inventory();
         
         
         private Random rnd = new Random();
@@ -14,13 +14,20 @@ namespace ConsoleRPG.Characters
         private int MaxMana { get; set; }
         private int Experience { get; set; }
         private int ExperienceToNextLevel { get; set; }
+        
+        private bool RunningAway { get; set; }
 
-        public Player(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer, int stunnedForXTurns, int mana, int maxMana, int experience, int experienceToNextLevel) : base(name, level, health, maxHealth, attack, defence, isPlayer, stunnedForXTurns)
+        public Player(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer,
+            int stunnedForXTurns, int mana, int maxMana, int experience, int experienceToNextLevel, Inventory inventory,
+            bool runningAway) 
+            : base(name, level, health, maxHealth, attack, defence, isPlayer, stunnedForXTurns, inventory)
         {
             Mana = mana;
             MaxMana = maxMana;
             Experience = experience;
             ExperienceToNextLevel = experienceToNextLevel;
+            Inventory = inventory;
+            RunningAway = runningAway;
         }
 
         public void AttackAction(Character target)
@@ -82,9 +89,19 @@ namespace ConsoleRPG.Characters
             throw new NotImplementedException();
         }
 
-        public void Run()
+        public void Run(Player player)
         {
-            throw new NotImplementedException();
+            var amount = 10;
+            Console.WriteLine($"{player.ReturnCharacterName()} has run!");
+            Console.WriteLine($"{player.ReturnCharacterName()} has been penalized by -{amount}% maximum health");
+            player.ReduceMaximumHealth(10);
+            player.RunningAway = true;
+            System.Threading.Thread.Sleep(5000);
+        }
+
+        private void ReduceMaximumHealth(int amount)
+        {
+            MaxHealth -= amount;
         }
 
         /* Attacks here */
@@ -164,7 +181,6 @@ namespace ConsoleRPG.Characters
                     ExperienceToNextLevel = Convert.ToInt32(Math.Floor(ExperienceToNextLevel * 1.2));
 
                     OnLevelUp();
-                    
                 }
             }
         }
@@ -206,6 +222,16 @@ namespace ConsoleRPG.Characters
         public int ReturnExperience()
         {
             return Experience;
+        }
+
+        public bool ReturnRunState()
+        {
+            return RunningAway;
+        }
+
+        public void SetRunningAwayState(bool b)
+        {
+            RunningAway = b;
         }
     }
 }

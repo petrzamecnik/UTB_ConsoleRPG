@@ -1,10 +1,13 @@
 ﻿using System;
+using ConsoleRPG.Items;
 
 namespace ConsoleRPG.Characters
 {
     public class Enemy : Character
     {
-        public Enemy(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer, int stunnedForXTurns) : base(name, level, health, maxHealth, attack, defence, isPlayer, stunnedForXTurns)
+        public Enemy(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer,
+            int stunnedForXTurns) 
+            : base(name, level, health, maxHealth, attack, defence, isPlayer, stunnedForXTurns, new Inventory())
         {
         }
         
