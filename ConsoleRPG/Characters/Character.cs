@@ -4,7 +4,7 @@ using ConsoleRPG.Items;
 
 namespace ConsoleRPG.Characters
 {
-    public abstract class Character
+    public abstract class Character : IComparable<Character>
     {
         public Inventory Inventory { get; set; }
         
@@ -19,7 +19,7 @@ namespace ConsoleRPG.Characters
         
         public int StunnedForXTurns { get; set; }
 
-        private Random rnd = new Random();
+        protected Rand Rand = Rand.Instant;
 
         protected Character(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer, int stunnedForXTurns, Inventory inventory)
         {
@@ -62,9 +62,9 @@ namespace ConsoleRPG.Characters
 
         public abstract void BasicAttack(Character target);
 
-        protected virtual void HeavyBlow(Character target, Random rnd)
+        protected virtual void HeavyBlow(Character target, Rand rand)
         {
-            var hitChance = rnd.Next(0, 100);
+            var hitChance = rand.Next(0, 100);
             if (hitChance <= 20)
             {
                 Console.WriteLine($"{target.ReturnCharacterName()} has dodged the attack!");
@@ -111,5 +111,15 @@ namespace ConsoleRPG.Characters
             return Health > 0;
         }
         
+        public int CompareTo(Character other)
+        {
+            return other == null ? 1 : CalculatePower().CompareTo(other.CalculatePower());
+        }
+
+        public double CalculatePower()
+        {
+            return ((Attack * 0.4) + (MaxHealth * 0.2) + (Defence * 0.4));
+        }
+
     }
 }

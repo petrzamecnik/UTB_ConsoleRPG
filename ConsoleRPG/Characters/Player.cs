@@ -9,7 +9,7 @@ namespace ConsoleRPG.Characters
         //private Inventory Inventory = new Inventory();
         
         
-        private Random rnd = new Random();
+        protected Rand Rand = Rand.Instant;
         private int Mana { get; set; }
         private int MaxMana { get; set; }
         private int Experience { get; set; }
@@ -49,7 +49,7 @@ namespace ConsoleRPG.Characters
                     break;
                 
                 case 2:
-                    HeavyBlow(target, rnd);
+                    HeavyBlow(target, Rand);
                     break;
             }
 
@@ -75,11 +75,11 @@ namespace ConsoleRPG.Characters
                     break;
                 
                 case 2:
-                    Fireball(player, target, rnd);
+                    Fireball(player, target, Rand);
                     break;
                 
                 case 3:
-                    Freeze(player, target, rnd);
+                    Freeze(player, target, Rand);
                     break;
             }
         }
@@ -157,7 +157,13 @@ namespace ConsoleRPG.Characters
                 player.Mana -= manaCost;
                 if (rnd.Next(0, 100) > 30)
                 {
-                    target.StunnedForXTurns += rnd.Next(2, 3);
+                    var freezeTime = rnd.Next(2, 3);
+                    target.StunnedForXTurns += freezeTime;
+                    Console.WriteLine($"{player.ReturnCharacterName()} has succesfuly freezed the enemy for {freezeTime} rounds! ");
+                }
+                else
+                {
+                    Console.WriteLine($"{player.ReturnCharacterName()} has failed to hit the freeze spell!");
                 }
             }
         }

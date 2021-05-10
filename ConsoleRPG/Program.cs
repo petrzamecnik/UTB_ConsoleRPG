@@ -21,49 +21,83 @@ namespace ConsoleRPG
         public static void Main(string[] args)
         {
             SetupConsole();
-            
-            var rand = new Random();
 
-            ConsoleHelper.SetCurrentFont(default, 18);
+            TextNav.RainbowWorld();
+            
+            var rand = Rand.Instant;
+
+            ConsoleHelper.SetCurrentFont(default, 20);
             Center("Welcome to ConsoleRPG");
             CenterWrite("Choose name for your character: ");
 
             //var heroName = Console.ReadLine();
            
-            var heroName = "Crowans";
+            var heroName = "Eric";
             
             // Creation of player's character
             var player = new Player(heroName, 1, 10, 100, 10, 0, true,
                 0, 100,100, 0, 100, new Inventory(), false);
 
             var monsters = CreateMonsterList(player, rand);
-            var enemy = monsters[rand.Next(0, monsters.Count - 1)];
+            //var enemy = monsters[rand.Next(0, monsters.Count - 1)];
             
             // game start
             gameStart:
             Console.Clear();
             Console.WriteLine("1 - Battle");
             Console.WriteLine("2 - View character info");
+            Console.WriteLine("3 - View available enemies");
+            Console.WriteLine("4 - View all characters sorted by their power");
             Console.Write("Choose your next action! --> ");
             
+            var enemy = monsters[rand.Next(0, monsters.Count - 1)];
+
+            
+            
+
+            
             // switching actions
-            var actionChoice = Convert.ToInt32(Console.ReadLine());
+            var actionChoiceInput = Console.ReadLine();
+            if (!int.TryParse(actionChoiceInput, out var actionChoice))
+            {
+                Console.WriteLine("*** Choice is not valid! ***");
+                goto gameStart;
+            }
+
+            if (actionChoice > 4 || actionChoice < 0)
+            {
+                Console.WriteLine("*** Choice is not valid! ***");
+                goto gameStart;
+            }
+
+            
+            
             switch (actionChoice)
             {
                 case 1:
                     player.SetRunningAwayState(false);
-                    Battle(player, enemy, rand);
+                    Battle(player, enemy, rand, monsters);
                     goto gameStart;
                     
                 case 2: 
                     TextNav.ViewCharacter(player);
                     goto gameStart;
+                    
+                case 3:
+                    TextNav.ViewAvailableEnemies(monsters);
+                    goto gameStart;
+                    
+                case 4:
+                    TextNav.CompareCharacterWithEnemy(player, monsters);
+                    goto gameStart;
+                        
                         
             }
         }
-
+        
+        
         // Method for battle
-        private static void Battle(Player player, Monster actualEnemy, Random rand)
+        private static void Battle(Player player, Monster actualEnemy, Random rand, List<Monster> monsters)
         {
             for (var i = 0; player.IsAlive() && actualEnemy.IsAlive() && !player.ReturnRunState(); i++)
             {
@@ -88,13 +122,6 @@ namespace ConsoleRPG
                     Console.WriteLine("You are stunned!");
                     Console.WriteLine($"You will be stunned for {player.StunnedForXTurns} more rounds.");
                 }
-                else if (player.IsAlive() && !actualEnemy.IsAlive())
-                {
-                    Console.WriteLine("Monster has been slain!");
-                    player.GainExperience(Convert.ToInt32(Math.Floor(actualEnemy.ReturnCharacterMaxHealth() * 0.4)));
-                    player.TryToLevelUp();
-                }
-                
 
                 if (actualEnemy.IsAlive() && !actualEnemy.IsStunned())
                 {
@@ -109,9 +136,8 @@ namespace ConsoleRPG
                     Console.WriteLine($"{actualEnemy.ReturnCharacterName()} will be stunned for {actualEnemy.StunnedForXTurns} more rounds.");
                 }
 
-
-                
             }
+            // Ask player if he wants to continue or quit
             if (!player.IsAlive())
             {
                 Console.Clear();
@@ -131,19 +157,22 @@ namespace ConsoleRPG
                 else
                 {
                     Console.Clear();
-                    Center("What a shame! ...");
+                    Center("What a COWARD you are! ...");
                     System.Threading.Thread.Sleep(3000);
                     Environment.Exit(1);
                     
                 }
 
             }
+            // get exp, level up, remove monster from list
             if (!actualEnemy.IsAlive())
             {
                 Console.Clear();
-                Console.WriteLine("Monster has been slain!");
+                Center("!CONGRATULION!");
+                Center("Monster has been slain!");
                 player.GainExperience(Convert.ToInt32(Math.Floor(actualEnemy.Health * 0.4)));
                 player.TryToLevelUp();
+                monsters.Remove(actualEnemy);
                 System.Threading.Thread.Sleep(3000);
                 
             }
@@ -222,7 +251,7 @@ namespace ConsoleRPG
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             { 
-                monsterNamesFile = File.ReadAllText("C:\\Users\\petrz\\RiderProjects\\UTB\\hrdina_a_drak\\jmena_monster.txt");
+                monsterNamesFile = File.ReadAllText("./monster_names.txt");
             }
             var names = monsterNamesFile.Split(',').ToList();
             
@@ -259,12 +288,21 @@ namespace ConsoleRPG
             }
         }
 
+        public static List<Character> ReturnAllCharacters(Player player, List<Monster> monsters)
+        {
+            var allCharacters = new List<Character> {player};
+            allCharacters.AddRange(monsters.Cast<Character>());
+
+            return allCharacters;
+        }
+
         // Setup Console
         private static void SetupConsole()
         {
             Console.WindowWidth = 120;
             Console.WindowHeight = 40;
             Console.ForegroundColor = ConsoleColor.Yellow;
+
 
         }
 
@@ -279,12 +317,47 @@ namespace ConsoleRPG
         }
         
         // Method to center string ( write )
-        public static void CenterWrite(string message)
+        private static void CenterWrite(string message)
         {
             var screenWidth = Console.WindowWidth;
             var stringWidth = message.Length;
             var spaces = (screenWidth / 2) + (stringWidth / 2);
             Console.Write(message.PadLeft(spaces));
+        }
+        public static void Col(string input,string colorName)
+        {
+            Console.ForegroundColor = colorName switch
+            {
+                    "Yellow" => ConsoleColor.Yellow,
+                    "DYellow"=>ConsoleColor.DarkYellow,
+                    "Red" => ConsoleColor.Red,
+                    "DGreen" => ConsoleColor.DarkGreen,
+                    "Blue" => ConsoleColor.Blue,
+                    "Cyan" => ConsoleColor.Cyan,
+                    "White" => ConsoleColor.White,
+                    _ => Console.ForegroundColor
+                    
+            };
+            Console.WriteLine(input);
+            Console.ResetColor();
+        }
+        
+        public static void ColWrite(string input,string colorName)
+        {
+            Console.ForegroundColor = colorName switch
+            {
+                "Yellow" => ConsoleColor.Yellow,
+                "DYellow"=>ConsoleColor.DarkYellow,
+                "Red" => ConsoleColor.Red,
+                "DGreen" => ConsoleColor.DarkGreen,
+                "Blue" => ConsoleColor.Blue,
+                "Cyan" => ConsoleColor.Cyan,
+                "White" => ConsoleColor.White,
+                _ => Console.ForegroundColor
+                    
+            };
+            Console.Write(input);
+            Console.ResetColor();
         }
     }
 }
