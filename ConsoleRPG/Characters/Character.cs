@@ -21,7 +21,8 @@ namespace ConsoleRPG.Characters
 
         protected Rand Rand = Rand.Instant;
 
-        protected Character(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer, int stunnedForXTurns, Inventory inventory)
+        protected Character(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer,
+            int stunnedForXTurns, Inventory inventory)
         {
             Name = name;
             Level = level;

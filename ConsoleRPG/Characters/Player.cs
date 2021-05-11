@@ -178,17 +178,22 @@ namespace ConsoleRPG.Characters
         {
             if (Experience > ExperienceToNextLevel)
             {
-                var nextLevelExperience = Experience - ExperienceToNextLevel;
+                OnLevelUp();
+                var bonusExperience = Math.Abs(ExperienceToNextLevel - Experience);
+                Experience = bonusExperience;
+            }
+
+            if (Experience > ExperienceToNextLevel)
+            {
+                var nextLevelExperience = Math.Abs(ExperienceToNextLevel - Experience);
                 if (nextLevelExperience > 0)
                 {
                     Experience = 0;
                     Experience += nextLevelExperience;
-                    Level += 1;
-                    ExperienceToNextLevel = Convert.ToInt32(Math.Floor(ExperienceToNextLevel * 1.2));
-
                     OnLevelUp();
                 }
             }
+            
         }
 
         private void OnLevelUp()
@@ -197,16 +202,10 @@ namespace ConsoleRPG.Characters
             MaxMana += 20;
             Attack += 10;
             Defence += 5;
-
+            Level++;
             Mana = MaxMana;
-            
-            Health += 20;
-            if (Health > MaxHealth)
-            {
-                Health = MaxHealth;
-            }
-            
-            
+            Health = MaxHealth;
+            ExperienceToNextLevel = Convert.ToInt32(ExperienceToNextLevel * 1.4);
         }
 
         public int ReturnPlayerMana()

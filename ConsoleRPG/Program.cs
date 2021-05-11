@@ -12,50 +12,70 @@ namespace ConsoleRPG
 {
     internal class Program
     {
+
+        
+        // TODO: CLEAN THE CODE!!
         // TODO: Implement inventory system for player
         // TODO: Implement more actions for player ( shop, crafting? )
         // TODO: Implement enemy item drop
         // TODO: Implement enemy battle logic
         
         
+        public static event Action<Player> EnemyChanged;
+
+        
         public static void Main(string[] args)
         {
             SetupConsole();
 
-            TextNav.RainbowWorld();
             
             var rand = Rand.Instant;
-
+            Monster enemy = null;
             ConsoleHelper.SetCurrentFont(default, 20);
+            
+            
             Center("Welcome to ConsoleRPG");
             CenterWrite("Choose name for your character: ");
-
             //var heroName = Console.ReadLine();
-           
-            var heroName = "Eric";
-            
-            // Creation of player's character
-            var player = new Player(heroName, 1, 10, 100, 10, 0, true,
-                0, 100,100, 0, 100, new Inventory(), false);
+            const string heroName = "Eric";
 
+            // Creation of player's character
+            var player = new Player(heroName, 1, 120, 120, 100, 10, true,
+                0, 100,100, 0, 100, new Inventory(), false);
+            
             var monsters = CreateMonsterList(player, rand);
             //var enemy = monsters[rand.Next(0, monsters.Count - 1)];
             
+
+            
             // game start
             gameStart:
+            const int maxNumberOfActions = 5;
             Console.Clear();
             Console.WriteLine("1 - Battle");
             Console.WriteLine("2 - View character info");
             Console.WriteLine("3 - View available enemies");
             Console.WriteLine("4 - View all characters sorted by their power");
+            Console.WriteLine("5 - View general info.");
             Console.Write("Choose your next action! --> ");
             
-            var enemy = monsters[rand.Next(0, monsters.Count - 1)];
 
+            try
+            {
+                enemy = monsters[rand.Next(0, monsters.Count - 1)];
+            }
+            catch
+            {
+                monsters = RiseNewMonsters(player, rand);
+                goto gameStart;
+            }
+            
+            EnemyChanged?.Invoke(player);
+            //var players = ReturnAllCharacters(player, monsters).FindAll(ch => ch is Player);
+            //players.ForEach(ch => ch.EnemyChanged += WriteNewMonster(player, enemy));
             
             
 
-            
             // switching actions
             var actionChoiceInput = Console.ReadLine();
             if (!int.TryParse(actionChoiceInput, out var actionChoice))
@@ -64,12 +84,11 @@ namespace ConsoleRPG
                 goto gameStart;
             }
 
-            if (actionChoice > 4 || actionChoice < 0)
+            if (actionChoice > maxNumberOfActions || actionChoice < 0)
             {
                 Console.WriteLine("*** Choice is not valid! ***");
                 goto gameStart;
             }
-
             
             
             switch (actionChoice)
@@ -90,12 +109,34 @@ namespace ConsoleRPG
                 case 4:
                     TextNav.CompareCharacterWithEnemy(player, monsters);
                     goto gameStart;
-                        
-                        
+                    
+                case 5:
+                    WriteGeneralInfo(player, monsters);
+                    goto gameStart;
+                    
             }
         }
-        
-        
+
+        public static void WriteNewMonster(Player player, Monster enemy)
+        {
+            Console.WriteLine($"{player.ReturnCharacterName()} is facing a new monster -> {enemy.ReturnCharacterName()}");
+        }
+
+        private static List<Monster> RiseNewMonsters(Player player, Rand rand)
+        {
+            Console.Clear();
+            Center("You have killed all monster nearby!");
+            Center("...");
+            System.Threading.Thread.Sleep(1000);
+            Center("Tho you haven't won yet ");
+            System.Threading.Thread.Sleep(1000);
+            Center("...");
+            System.Threading.Thread.Sleep(1000);
+            Center("New monsters are rising. Good luck warrior!");
+            return CreateMonsterList(player, rand);
+        }
+
+
         // Method for battle
         private static void Battle(Player player, Monster actualEnemy, Random rand, List<Monster> monsters)
         {
@@ -145,7 +186,7 @@ namespace ConsoleRPG
                 Center("You have died! :( ");
                 Center(new string('*', 40));
                 Console.WriteLine();
-                CenterWrite("Do you wish to continue? --> Y/N");
+                CenterWrite("Do you wish to continue? --> Y/N   ");
                 var continueOrExit = Console.ReadLine()?.ToLower();
                 if (continueOrExit == "y")
                 {
@@ -170,7 +211,8 @@ namespace ConsoleRPG
                 Console.Clear();
                 Center("!CONGRATULION!");
                 Center("Monster has been slain!");
-                player.GainExperience(Convert.ToInt32(Math.Floor(actualEnemy.Health * 0.4)));
+                player.GainExperience(Convert.ToInt32(Math.Floor(actualEnemy.ReturnCharacterMaxHealth() * 0.6)));
+                Center($"Experience gained: {Convert.ToInt32(Math.Floor(actualEnemy.ReturnCharacterMaxHealth() * 0.6))}");
                 player.TryToLevelUp();
                 monsters.Remove(actualEnemy);
                 System.Threading.Thread.Sleep(3000);
@@ -213,11 +255,7 @@ namespace ConsoleRPG
                     player.Run(player);
                     break;
             }
-
-            Console.WriteLine("SWITCH HAS ENDED");
-            
         }
-        
 
         // Method to create new monster
         private static Monster CreateNewMonster(Player player, Random rand)
@@ -295,6 +333,83 @@ namespace ConsoleRPG
 
             return allCharacters;
         }
+        
+        private static void WriteGeneralInfo(Player player, List<Monster> monsters)
+        {
+            var averageCharacterPower = ReturnAllCharacters(player, monsters)
+                .Average(ch => ch.CalculatePower());
+            
+            var characterWithLowestPower = ReturnAllCharacters(player, monsters)
+                .Min(ch => ch.CalculatePower());
+            
+            var characterWithHighestPower = ReturnAllCharacters(player, monsters)
+                .Max(ch => ch.CalculatePower());
+            
+            var characterWithPowerHigherThanAverage = ReturnAllCharacters(player, monsters)
+                .FindAll(ch => ch.CalculatePower() > averageCharacterPower);
+            
+            var lastCharacterWithPowerLowerThanAverage = ReturnAllCharacters(player, monsters)
+                .FindLast(ch => ch.CalculatePower() < averageCharacterPower);
+            
+            var onlyHero = ReturnAllCharacters(player, monsters).FindAll(ch => ch is Player);
+            
+            var averageDamage = ReturnAllCharacters(player, monsters).Average(ch => ch.ReturnCharacterAttack());
+
+            var averageDefence = ReturnAllCharacters(player, monsters).Average(ch => ch.ReturnCharacterDefense());
+
+            var higherThanOneQuarter = ReturnAllCharacters(player, monsters)
+                .FindAll(ch => ch.ReturnCharacterDefense() > (averageDefence / 4));
+            
+            
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            Center(new string('*', 30));
+            Center("Press [ENTER] to return back.");
+            Center(new string('*', 30));
+            Console.WriteLine();
+            
+            Center($"Average power of characters: {Math.Round(averageCharacterPower, 2)}");
+            Center(new string('-', 60));
+            
+            // !! Zeptat se jestli tohle jde dát na více řádků !!
+            Center($"Weakest character: {ReturnAllCharacters(player, monsters).Find(ch => Math.Abs(ch.CalculatePower() - characterWithLowestPower) < 0.3).ReturnCharacterName()} - " +
+                   $"{characterWithLowestPower}");
+            Center(new string('-', 60));
+
+            Center($"Strongest character: {ReturnAllCharacters(player, monsters).Find(ch => Math.Abs(ch.CalculatePower() - characterWithHighestPower) < 0.3).ReturnCharacterName()} - " +
+                   $"{characterWithHighestPower}");
+            Center(new string('-', 60));
+
+            Center($"Characters with higher power than average: ");
+            foreach (var ch in characterWithPowerHigherThanAverage)
+            {
+                Center($"{ch.ReturnCharacterName()} -> {ch.CalculatePower()}");
+            }
+            Center(new string('-', 60));
+
+            
+            Center($"Last listed character with power value lower than average: ");
+            Center($"{lastCharacterWithPowerLowerThanAverage.ReturnCharacterName()} - {lastCharacterWithPowerLowerThanAverage.CalculatePower()}");
+            Center(new string('-', 60));
+
+            
+            Center($"Player's character: {player.ReturnCharacterName()} - {player.CalculatePower()}");
+            Center(new string('-', 60));
+
+            
+            // characters that remain after removing all characters,
+            // that have maximum damage lower than half of the average
+            // nelze :(
+            
+            Center("All character's that have lower defence then one quarter of average: ");
+            foreach (var ch in higherThanOneQuarter)
+            {
+                Center($"{ch.ReturnCharacterName()} - {ch.ReturnCharacterDefense()}");
+            }
+
+            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
+        }
 
         // Setup Console
         private static void SetupConsole()
@@ -339,6 +454,28 @@ namespace ConsoleRPG
                     
             };
             Console.WriteLine(input);
+            Console.ResetColor();
+        }
+
+        public static void CenterCol(string input, string colorName)
+        {
+            var screenWidth = Console.WindowWidth;
+            var stringWidth = input.Length;
+            var spaces = (screenWidth / 2) + (stringWidth / 2);
+            
+            Console.ForegroundColor = colorName switch
+            {
+                "Yellow" => ConsoleColor.Yellow,
+                "DYellow"=>ConsoleColor.DarkYellow,
+                "Red" => ConsoleColor.Red,
+                "DGreen" => ConsoleColor.DarkGreen,
+                "Blue" => ConsoleColor.Blue,
+                "Cyan" => ConsoleColor.Cyan,
+                "White" => ConsoleColor.White,
+                _ => Console.ForegroundColor
+                    
+            };
+            Console.WriteLine(input.PadLeft(spaces));
             Console.ResetColor();
         }
         
