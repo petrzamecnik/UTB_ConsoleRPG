@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Runtime.InteropServices;
 using ConsoleRPG.Characters;
 using ConsoleRPG.Items;
@@ -19,11 +18,8 @@ namespace ConsoleRPG
         // TODO: Implement more actions for player ( shop, crafting? )
         // TODO: Implement enemy item drop
         // TODO: Implement enemy battle logic
-        
-        
-        public static event Action<Player> EnemyChanged;
+        public static event Action<Character, Character> EnemyChanged;
 
-        
         public static void Main(string[] args)
         {
             SetupConsole();
@@ -39,41 +35,69 @@ namespace ConsoleRPG
             //var heroName = Console.ReadLine();
             const string heroName = "Eric";
 
+
+            var testItem = new Item("testItem", 10);
+            var testWeapon = new Weapon("testWeapon", 10, 10);
+            var testShield = new Shield("testShield", 10, 10);
+            var testHelmet = new Helmet("testHelmet", 10, 10);
+            var testArmor = new Armor("testArmor", 10, 10);
+            var testHealthPotion = new Potion("testHealthPotion", 10, 10, 0);
+            var testManaPotion = new Potion("testManaPotion", 10, 0, 10);
+            
+
+
             // Creation of player's character
             var player = new Player(heroName, 1, 120, 120, 100, 10, true,
-                0, 100,100, 0, 100, new Inventory(), false);
+                0, 100, 100, 0, 100,
+                new Inventory(new List<Item>()), testWeapon, testShield, testHelmet, testArmor, false);
+            
             
             var monsters = CreateMonsterList(player, rand);
-            //var enemy = monsters[rand.Next(0, monsters.Count - 1)];
+
+            player.Inventory.AddItem(testItem);
+            player.Inventory.AddItem(testWeapon);
+            player.Inventory.AddItem(testShield);
+            player.Inventory.AddItem(testHelmet);
+            player.Inventory.AddItem(testArmor);
+            player.Inventory.AddItem(testHealthPotion);
+            player.Inventory.AddItem(testManaPotion);
+
+            
+            
+            
+
+ 
+
+          
+
+            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
+
             
 
             
             // game start
             gameStart:
-            const int maxNumberOfActions = 5;
+            const int maxNumberOfActions = 6;
             Console.Clear();
             Console.WriteLine("1 - Battle");
             Console.WriteLine("2 - View character info");
             Console.WriteLine("3 - View available enemies");
             Console.WriteLine("4 - View all characters sorted by their power");
             Console.WriteLine("5 - View general info.");
+            Console.WriteLine("6 - View inventory");
             Console.Write("Choose your next action! --> ");
             
 
             try
             {
                 enemy = monsters[rand.Next(0, monsters.Count - 1)];
+
             }
             catch
             {
                 monsters = RiseNewMonsters(player, rand);
                 goto gameStart;
             }
-            
-            EnemyChanged?.Invoke(player);
-            //var players = ReturnAllCharacters(player, monsters).FindAll(ch => ch is Player);
-            //players.ForEach(ch => ch.EnemyChanged += WriteNewMonster(player, enemy));
-            
             
 
             // switching actions
@@ -95,6 +119,10 @@ namespace ConsoleRPG
             {
                 case 1:
                     player.SetRunningAwayState(false);
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    EnemyChanged = WriteNewMonster;
+                    EnemyChanged?.Invoke(player, enemy);
                     Battle(player, enemy, rand, monsters);
                     goto gameStart;
                     
@@ -114,12 +142,17 @@ namespace ConsoleRPG
                     WriteGeneralInfo(player, monsters);
                     goto gameStart;
                     
+                case 6:
+                    TextNav.ViewInventory(player);
+                    goto gameStart;
+
             }
         }
 
-        public static void WriteNewMonster(Player player, Monster enemy)
+        private static void WriteNewMonster(Character player, Character enemy)
         {
             Console.WriteLine($"{player.ReturnCharacterName()} is facing a new monster -> {enemy.ReturnCharacterName()}");
+
         }
 
         private static List<Monster> RiseNewMonsters(Player player, Rand rand)
@@ -274,7 +307,7 @@ namespace ConsoleRPG
             var monsterDefence = 5 + (5 * playerLevel) * Convert.ToInt32(rand.Next(1,300 +1) / 100);
 
             var monster = new Monster(monsterName, monsterLevel, monsterHealth, monsterMaxHealth, monsterAttack,
-                monsterDefence, false, 0);
+                monsterDefence, false, 0, new Inventory(new List<Item>()));
             
             return monster;
         }

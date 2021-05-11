@@ -5,13 +5,11 @@ namespace ConsoleRPG.Characters
 {
     public class Enemy : Character
     {
-        public Enemy(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer,
-            int stunnedForXTurns) 
-            : base(name, level, health, maxHealth, attack, defence, isPlayer, stunnedForXTurns, new Inventory())
+        public Enemy(string name, int level, int health, int maxHealth, int attack, int defense, bool isPlayer, int stunnedForXTurns, Inventory inventory) : base(name, level, health, maxHealth, attack, defense, isPlayer, stunnedForXTurns, inventory)
         {
         }
-        
-        
+
+
         public override void BasicAttack(Character target)
         {
             target.Health -= Attack;

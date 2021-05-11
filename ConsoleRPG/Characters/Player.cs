@@ -15,12 +15,22 @@ namespace ConsoleRPG.Characters
         private int Experience { get; set; }
         private int ExperienceToNextLevel { get; set; }
         
+        private Weapon Weapon { get; set; }
+        
+        private Shield Shield { get; set; }
+        
+        private Armor Armor { get; set; }
+        
+        private Helmet Helmet { get; set; }
+        
+        
+        
         private bool RunningAway { get; set; }
 
-        public Player(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer,
+        public Player(string name, int level, int health, int maxHealth, int attack, int defense, bool isPlayer,
             int stunnedForXTurns, int mana, int maxMana, int experience, int experienceToNextLevel, Inventory inventory,
-            bool runningAway) 
-            : base(name, level, health, maxHealth, attack, defence, isPlayer, stunnedForXTurns, inventory)
+            Weapon weapon, Shield shield, Helmet helmet, Armor armor, bool runningAway) 
+            : base(name, level, health, maxHealth, attack, defense, isPlayer, stunnedForXTurns, inventory)
         {
             Mana = mana;
             MaxMana = maxMana;
@@ -28,6 +38,31 @@ namespace ConsoleRPG.Characters
             ExperienceToNextLevel = experienceToNextLevel;
             Inventory = inventory;
             RunningAway = runningAway;
+            Attack += Weapon.ReturnBonusAttack();
+            Defense += Shield.ReturnBonusDefense() + Helmet.ReturnBonusDefense() + Armor.ReturnBonusDefense();
+            Weapon = null;
+        }
+
+        public void EquipItem(Item item)
+        {
+            switch (item)
+            {
+                case Weapon weapon:
+                    Weapon = weapon;
+                    break;
+                
+                case Shield shield:
+                    Shield = shield;
+                    break;
+                
+                case Helmet helmet:
+                    Helmet = helmet;
+                    break;
+                
+                case Armor armor:
+                    Armor = armor;
+                    break;
+            }
         }
 
         public void AttackAction(Character target)
@@ -201,7 +236,7 @@ namespace ConsoleRPG.Characters
             MaxHealth += 30;
             MaxMana += 20;
             Attack += 10;
-            Defence += 5;
+            Defense += 5;
             Level++;
             Mana = MaxMana;
             Health = MaxHealth;

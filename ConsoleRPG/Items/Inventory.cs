@@ -14,19 +14,10 @@ namespace ConsoleRPG.Items
             Items = items;
         }
 
-        public Inventory()
-        {
-            
-        }
-
-
         public void AddItem(Item item)
-    {
-        if (Items != null)
         {
-            Items.Add(item);
+            Items?.Add(item);
         }
-    }
         
     }
     

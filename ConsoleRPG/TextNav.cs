@@ -1,12 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using ConsoleRPG.Characters;
+using ConsoleRPG.Items;
 using static ConsoleRPG.Program;
 
 
 namespace ConsoleRPG
 {
-    public class TextNav
+    public static class TextNav
     {
 
         public static void ViewCharacter(Player player)
@@ -116,6 +119,64 @@ namespace ConsoleRPG
 
             Console.ReadKey();
             Console.Clear();
+        }
+
+        public static void ViewInventory(Player player)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            Center(new string('*', 30));
+            Center("Press [ENTER] to return back.");
+            Center(new string('*', 30));
+            Console.WriteLine();
+            Console.WriteLine();
+            Center(new string('-', 30));
+
+
+
+            
+           /*
+            foreach (var item in player.Inventory.Items)
+            {
+                switch (item)
+                {
+                    case Weapon:
+                        Center($"{Armor.ReturnItemName()}");
+                        Center($"Bonus attack: {Weapon.ReturnBonusAttack()}");
+                        Center(new string('-', 30));
+                        break;
+                    
+                    case Shield:
+                        Center($"{Armor.ReturnItemName()}");
+                        Center($"Bonus defense: {Shield.ReturnBonusDefense()}");
+                        Center(new string('-', 30));
+                        break;
+                    
+                    case Helmet:
+                        Center($"{Armor.ReturnItemName()}");
+                        Center($"Bonus defense: {Helmet.ReturnBonusDefense()}");
+                        Center(new string('-', 30));
+                        break;
+                    
+                    case Armor:
+                        Center($"{Armor.ReturnItemName()}");
+                        Center($"Bonus defense: {Armor.ReturnBonusDefense()}");
+                        Center(new string('-', 30));
+                        break;
+
+                        
+                }
+            }
+            */
+            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
+        }
+
+        public static void EquipItem(Player player)
+        {
+            ViewInventory(player);
+            
+            
         }
     }
 }

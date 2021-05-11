@@ -14,14 +14,14 @@ namespace ConsoleRPG.Characters
         protected internal int Health { get; set; }
         protected int MaxHealth { get; set; }
         protected int Attack { get; set; }
-        protected int Defence { get; set; }
+        protected int Defense { get; set; }
         protected bool IsPlayer { get; set; }
         
         public int StunnedForXTurns { get; set; }
 
         protected Rand Rand = Rand.Instant;
 
-        protected Character(string name, int level, int health, int maxHealth, int attack, int defence, bool isPlayer,
+        protected Character(string name, int level, int health, int maxHealth, int attack, int defense, bool isPlayer,
             int stunnedForXTurns, Inventory inventory)
         {
             Name = name;
@@ -29,7 +29,7 @@ namespace ConsoleRPG.Characters
             Health = health;
             MaxHealth = maxHealth;
             Attack = attack;
-            Defence = defence;
+            Defense = defense;
             IsPlayer = isPlayer;
             StunnedForXTurns = stunnedForXTurns;
             Inventory = inventory;
@@ -51,14 +51,6 @@ namespace ConsoleRPG.Characters
             }
 
             return false;
-        }
-
-        public void WriteCharacetrInfo()
-        {
-            Console.WriteLine(Name);
-            Console.WriteLine(Health);
-            Console.WriteLine(Attack);
-            Console.WriteLine(Defence);
         }
 
         public abstract void BasicAttack(Character target);
@@ -94,7 +86,7 @@ namespace ConsoleRPG.Characters
 
         public int ReturnCharacterDefense()
         {
-            return Defence;
+            return Defense;
         }
 
         public string ReturnCharacterName()
@@ -119,7 +111,7 @@ namespace ConsoleRPG.Characters
 
         public double CalculatePower()
         {
-            return ((Attack * 0.4) + (MaxHealth * 0.2) + (Defence * 0.4));
+            return ((Attack * 0.4) + (MaxHealth * 0.2) + (Defense * 0.4));
         }
 
     }

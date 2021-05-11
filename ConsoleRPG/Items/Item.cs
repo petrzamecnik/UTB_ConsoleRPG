@@ -5,35 +5,19 @@ namespace ConsoleRPG.Items
 {
     public class Item
     {
-        public string Name { get; set; }
-        public int MaximumQuantity { get; set; }
+        private static string Name { get; set; }
+        private int Cost { get; set; }
 
-        public Item(string name, int maximumQuantity)
+
+        public Item(string name, int cost)
         {
             Name = name;
-            MaximumQuantity = maximumQuantity;
+            Cost = cost;
         }
-    }
 
-    public class Weapon : Item
-    {
-        public Weapon(string name, int maximumQuantity) : base(name, maximumQuantity)
+        public static string ReturnItemName()
         {
-        }
-    }
-
-    public class Armor : Item
-    {
-        public Armor(string name, int maximumQuantity) : base(name, maximumQuantity)
-        {
-        }
-    }
-
-    public class Potion : Item
-    {
-        public Potion(string name, int maximumQuantity) : base(name, maximumQuantity)
-        {
-            MaximumQuantity = 10;
+            return Name;
         }
     }
 }
