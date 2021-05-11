@@ -23,34 +23,36 @@ namespace ConsoleRPG.Characters
         
         private Helmet Helmet { get; set; }
         
-        
-        
         private bool RunningAway { get; set; }
 
         public Player(string name, int level, int health, int maxHealth, int attack, int defense, bool isPlayer,
-            int stunnedForXTurns, int mana, int maxMana, int experience, int experienceToNextLevel, Inventory inventory,
-            Weapon weapon, Shield shield, Helmet helmet, Armor armor, bool runningAway) 
+            int stunnedForXTurns, Inventory inventory, int mana, int maxMana, int experience, int experienceToNextLevel,
+            Weapon weapon, Shield shield, Armor armor, Helmet helmet, bool runningAway)
             : base(name, level, health, maxHealth, attack, defense, isPlayer, stunnedForXTurns, inventory)
         {
             Mana = mana;
             MaxMana = maxMana;
             Experience = experience;
             ExperienceToNextLevel = experienceToNextLevel;
-            Inventory = inventory;
+            Weapon = weapon;
+            Shield = shield;
+            Armor = armor;
+            Helmet = helmet;
             RunningAway = runningAway;
+
             Attack += Weapon.ReturnBonusAttack();
             Defense += Shield.ReturnBonusDefense() + Helmet.ReturnBonusDefense() + Armor.ReturnBonusDefense();
-            Weapon = null;
         }
 
         public void EquipItem(Item item)
         {
             switch (item)
             {
+                /*
                 case Weapon weapon:
                     Weapon = weapon;
                     break;
-                
+                */
                 case Shield shield:
                     Shield = shield;
                     break;

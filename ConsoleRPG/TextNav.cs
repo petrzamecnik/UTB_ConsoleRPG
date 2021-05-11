@@ -9,7 +9,7 @@ using static ConsoleRPG.Program;
 
 namespace ConsoleRPG
 {
-    public static class TextNav
+    public class TextNav
     {
 
         public static void ViewCharacter(Player player)
@@ -134,45 +134,78 @@ namespace ConsoleRPG
             Center(new string('-', 30));
 
 
+            var potions = new List<Potion>();
+            foreach (var item in player.Inventory.Items)
+            {
+                if (item is Potion)
+                {
+                    var potion = (Potion) item;
+                    potions.Add(potion);
+                }
+            }
+
+            foreach (var potion in potions)
+            {
+                Center($"{potion.ReturnItemName()}");
+                Center($"{potion.ReturnHealthRegenAmount()}");
+                Center($"{potion.ReturnManaRegenAmount()}");
+            }
+            
+            
+
+            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
 
             
-           /*
+            
+            /*
             foreach (var item in player.Inventory.Items)
             {
                 switch (item)
                 {
                     case Weapon:
-                        Center($"{Armor.ReturnItemName()}");
+                        Center($"{item.ReturnItemName()}");
                         Center($"Bonus attack: {Weapon.ReturnBonusAttack()}");
                         Center(new string('-', 30));
                         break;
                     
                     case Shield:
-                        Center($"{Armor.ReturnItemName()}");
+                        Center($"{item.ReturnItemName()}");
                         Center($"Bonus defense: {Shield.ReturnBonusDefense()}");
                         Center(new string('-', 30));
                         break;
                     
                     case Helmet:
-                        Center($"{Armor.ReturnItemName()}");
+                        Center($"{item.ReturnItemName()}");
                         Center($"Bonus defense: {Helmet.ReturnBonusDefense()}");
                         Center(new string('-', 30));
                         break;
                     
                     case Armor:
-                        Center($"{Armor.ReturnItemName()}");
+                        Center($"{item.ReturnItemName()}");
                         Center($"Bonus defense: {Armor.ReturnBonusDefense()}");
+                        Center(new string('-', 30));
+                        break;
+                    
+                    case Potion:
+                        Center($"{item.ReturnItemName()}");
+                        Center($"Health regen: {Potion.ReturnHealthRegenAmount()}");
+                        Center($"Mana regen: {Potion.ReturnManaRegenAmount()}");
                         Center(new string('-', 30));
                         break;
 
                         
                 }
             }
-            */
+        */    
+            
             while (Console.ReadKey().Key != ConsoleKey.Enter) { }
+
         }
 
-        public static void EquipItem(Player player)
+
+
+
+            public static void EquipItem(Player player)
         {
             ViewInventory(player);
             

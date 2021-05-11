@@ -5,7 +5,7 @@ namespace ConsoleRPG.Items
 {
     public class Item
     {
-        private static string Name { get; set; }
+        protected string Name { get; set; }
         private int Cost { get; set; }
 
 
@@ -15,7 +15,7 @@ namespace ConsoleRPG.Items
             Cost = cost;
         }
 
-        public static string ReturnItemName()
+        public string ReturnItemName()
         {
             return Name;
         }

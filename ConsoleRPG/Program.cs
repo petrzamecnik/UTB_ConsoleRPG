@@ -47,13 +47,13 @@ namespace ConsoleRPG
 
 
             // Creation of player's character
-            var player = new Player(heroName, 1, 120, 120, 100, 10, true,
-                0, 100, 100, 0, 100,
-                new Inventory(new List<Item>()), testWeapon, testShield, testHelmet, testArmor, false);
+            var player = new Player(heroName, 1, 120, 120, 20, 10, true,
+                0, new Inventory(new List<Item>()), 100, 100, 0,
+                100, testWeapon, testShield, testArmor, testHelmet, false);
             
             
             var monsters = CreateMonsterList(player, rand);
-
+/*
             player.Inventory.AddItem(testItem);
             player.Inventory.AddItem(testWeapon);
             player.Inventory.AddItem(testShield);
@@ -62,6 +62,14 @@ namespace ConsoleRPG
             player.Inventory.AddItem(testHealthPotion);
             player.Inventory.AddItem(testManaPotion);
 
+            Console.WriteLine(player.Inventory.Items[0].ReturnItemName());
+            Console.WriteLine(player.Inventory.Items[1].ReturnItemName());
+            Console.WriteLine(player.Inventory.Items[2].ReturnItemName());
+            Console.WriteLine(player.Inventory.Items[3].ReturnItemName());
+            Console.WriteLine(player.Inventory.Items[4].ReturnItemName());
+            Console.WriteLine(player.Inventory.Items[5].ReturnItemName());
+            Console.WriteLine(player.Inventory.Items[6].ReturnItemName());
+*/
             
             
             
