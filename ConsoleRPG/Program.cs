@@ -36,11 +36,14 @@ namespace ConsoleRPG
             const string heroName = "Eric";
 
 
-            var testItem = new Item("testItem", 10);
             var testWeapon = new Weapon("testWeapon", 10, 10);
+            var testWeapon2 = new Weapon("Brutal Battle Axe", 10, 20);
             var testShield = new Shield("testShield", 10, 10);
+            var testShield2 = new Shield("testShield2", 10, 20);
             var testHelmet = new Helmet("testHelmet", 10, 10);
+            var testHelmet2 = new Helmet("testHelmet2", 10, 20);
             var testArmor = new Armor("testArmor", 10, 10);
+            var testArmor2 = new Armor("testArmor", 10, 20);
             var testHealthPotion = new Potion("testHealthPotion", 10, 10, 0);
             var testManaPotion = new Potion("testManaPotion", 10, 0, 10);
             
@@ -54,18 +57,21 @@ namespace ConsoleRPG
             
             var monsters = CreateMonsterList(player, rand);
 
-            player.Inventory.AddItem(testItem);
             player.Inventory.AddItem(testWeapon);
+            player.Inventory.AddItem(testWeapon2);
             player.Inventory.AddItem(testShield);
+            player.Inventory.AddItem(testShield2);
             player.Inventory.AddItem(testHelmet);
+            player.Inventory.AddItem(testHelmet2);
             player.Inventory.AddItem(testArmor);
+            player.Inventory.AddItem(testArmor2);
             player.Inventory.AddItem(testHealthPotion);
             player.Inventory.AddItem(testManaPotion);
             
             
             // game start
             gameStart:
-            const int maxNumberOfActions = 6;
+            const int maxNumberOfActions = 7;
             Console.Clear();
             Console.WriteLine("1 - Battle");
             Console.WriteLine("2 - View character info");
@@ -73,6 +79,7 @@ namespace ConsoleRPG
             Console.WriteLine("4 - View all characters sorted by their power");
             Console.WriteLine("5 - View general info.");
             Console.WriteLine("6 - View inventory");
+            Console.WriteLine("7 - Change Equipment");
             Console.Write("Choose your next action! --> ");
             
 
@@ -96,7 +103,7 @@ namespace ConsoleRPG
                 goto gameStart;
             }
 
-            if (actionChoice > maxNumberOfActions || actionChoice < 0)
+            if (actionChoice > maxNumberOfActions || actionChoice <= 0)
             {
                 Console.WriteLine("*** Choice is not valid! ***");
                 goto gameStart;
@@ -133,6 +140,11 @@ namespace ConsoleRPG
                 case 6:
                     TextNav.ViewInventory(player);
                     goto gameStart;
+                    
+                case 7:
+                    TextNav.ChangeEquipment(player);
+                    goto gameStart;
+                    
 
             }
         }

@@ -275,5 +275,17 @@ namespace ConsoleRPG.Characters
         {
             RunningAway = b;
         }
+
+        public void EquipNewWeapon(Weapon newWeapon)
+        {
+            Attack -= Weapon.ReturnBonusAttack();
+            Attack += newWeapon.ReturnBonusAttack();
+        }
+
+        public void EquipNewShield(Shield newShield)
+        {
+            Defense -= Shield.ReturnBonusDefense();
+            Defense += newShield.ReturnBonusDefense();
+        }
     }
 }
