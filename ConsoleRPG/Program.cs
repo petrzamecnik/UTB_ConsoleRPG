@@ -34,38 +34,95 @@ namespace ConsoleRPG
             CenterWrite("Choose name for your character: ");
             //var heroName = Console.ReadLine();
             const string heroName = "Eric";
+            
+            // weapons
+            var placeHolderWeapon = new Weapon("Empty", 0, 0);
+            var woodenSword = new Weapon("Wooden Sword", 0, 10);
+            var stoneSword = new Weapon("Stone Sword", 10, 15);
+            var woodenStickOfDoom = new Weapon("Wooden Stick of Doom", 30, 30);
+            var ironSword = new Weapon("Iron Sword", 50, 40);
+            var brutalBattleAxe = new Weapon("Brutal Battle Axe", 50, 45);
+            var fieryRapier = new Weapon("Fiery Rapier", 80, 60);
+            
+            // shields
+            var placeHolderShield = new Shield("Empty", 0, 0);
+            var woodenShield = new Shield("Wooden Shield", 0, 10);
+            var ironShield = new Shield("Iron Shield", 30, 30);
+            var ironDome = new Shield("Iron Dome", 100, 50);
+            var hugeLifeSavingBarrier = new Shield("Huge Life Saving Barrier", 150, 60);
+            
+            // helmets
+            var placeHolderHelmet = new Helmet("Empty", 0, 0);
+            var leatherHelmet = new Helmet("Leather Helmet", 0, 5);
+            var ironHelmet = new Helmet("Iron Helmet", 30, 10);
+            var reinforcedIronHelmet = new Helmet("Reinforced Iron Helmet", 50, 20);
+            var helmetOfGreatProtector = new Helmet("Helmet of Great Protector", 100, 30);
+            var dragonScaleHelmet = new Helmet("Dragon Scale Helmet", 300, 50);
 
-            var testWeapon = new Weapon("testWeapon", 10, 10);
-            var testWeapon2 = new Weapon("Brutal Battle Axe", 10, 20);
-            var testShield = new Shield("testShield", 10, 10);
-            var testShield2 = new Shield("testShield2", 10, 20);
-            var testHelmet = new Helmet("testHelmet", 10, 10);
-            var testHelmet2 = new Helmet("testHelmet2", 10, 20);
-            var testArmor = new Armor("testArmor", 10, 10);
-            var testArmor2 = new Armor("testArmor", 10, 20);
-            var testHealthPotion = new Potion("testHealthPotion", 10, 10, 0);
-            var testManaPotion = new Potion("testManaPotion", 10, 0, 10);
+            // armors
+            var placeHolderArmor = new Armor("Empty", 0, 0);
+            var leatherArmor = new Armor("Leather Armor", 0, 5);
+            var ironArmor = new Armor("Iron Armor", 30, 10);
+            var reinforcedIronArmor = new Armor("Reinforced Iron Armor", 50, 20);
+            var armorOfGreatProtector = new Armor("Armor of Great Protector", 100, 30);
+            var dragonScaleArmor = new Armor("Dragon Scale Armor", 300, 50);
+
+            // potions
+            var smallHealthPotion = new Potion("Small Health Potion", 20, 30, 0);
+            var mediumHealthPotion = new Potion("Medium Health Potion", 30, 60, 0);
+            var largeHealthPotion = new Potion("Large Health Potion", 50, 90, 0);
+
+            var smallManaPotion = new Potion("Small Health Potion", 20, 0, 30);
+            var mediumManaPotion = new Potion("Medium Health Potion", 30, 0, 60);
+            var largeManaPotion = new Potion("Large Health Potion", 50, 0, 90);
+
+            var smallHybridPotion = new Potion("Small Hybrid Potion", 40, 30, 30);
+            var mediumHybridPotion = new Potion("Medium Hybrid Potion", 60, 60, 60);
+            var largeHybridPotion = new Potion("Large Hybrid Potion", 90, 90, 90);
+
+            var items1To5 = new List<Item>()
+            {
+                stoneSword, woodenStickOfDoom,
+                ironShield,
+                ironHelmet, reinforcedIronHelmet,
+                ironArmor, reinforcedIronArmor
+            };
+
+            var items6To10 = new List<Item>()
+            {
+                ironSword,
+                ironShield,
+                ironHelmet, reinforcedIronHelmet,
+                ironArmor, reinforcedIronArmor
+            };
+
+            var items11To20 = new List<Item>()
+            {
+                ironSword, brutalBattleAxe, fieryRapier,
+                ironShield, ironDome, hugeLifeSavingBarrier,
+                helmetOfGreatProtector, dragonScaleHelmet
+                ,armorOfGreatProtector, dragonScaleArmor
+            };
+            
+            
+            
             
 
 
             // Creation of player's character
             var player = new Player(heroName, 1, 120, 120, 20, 10, true,
                 0, new Inventory(new List<Item>()), 100, 100, 0,
-                100, testWeapon, testShield, testArmor, testHelmet, false);
+                100, placeHolderWeapon, placeHolderShield, placeHolderArmor, placeHolderHelmet, false);
             
+            player.Inventory.AddItem(woodenSword);
+            player.Inventory.AddItem(woodenShield);
+            player.Inventory.AddItem(leatherHelmet);
+            player.Inventory.AddItem(leatherArmor);
+            player.Inventory.AddItem(smallHealthPotion);
+            player.Inventory.AddItem(smallManaPotion);
             
-            var monsters = CreateMonsterList(player, rand);
 
-            player.Inventory.AddItem(testWeapon);
-            player.Inventory.AddItem(testWeapon2);
-            player.Inventory.AddItem(testShield);
-            player.Inventory.AddItem(testShield2);
-            player.Inventory.AddItem(testHelmet);
-            player.Inventory.AddItem(testHelmet2);
-            player.Inventory.AddItem(testArmor);
-            player.Inventory.AddItem(testArmor2);
-            player.Inventory.AddItem(testHealthPotion);
-            player.Inventory.AddItem(testManaPotion);
+            var monsters = CreateMonsterList(player, rand);
             
             
             // game start
@@ -262,7 +319,13 @@ namespace ConsoleRPG
             Console.WriteLine("3 - Use Potion");
             Console.WriteLine("4 - Run");
             Console.Write("Choose your action --> ");
-            var actionChoice = Convert.ToInt32(Console.ReadLine());
+            var actionChoiceInput = Console.ReadLine();
+
+            if (!int.TryParse(actionChoiceInput, out var actionChoice))
+            {
+                Console.WriteLine("*** Not valid choice ***");
+                PlayerBattleActions(player, actualEnemy);
+            }
 
             if (actionChoice > 4 || actionChoice <= 0)
             {
