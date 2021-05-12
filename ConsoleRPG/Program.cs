@@ -53,7 +53,7 @@ namespace ConsoleRPG
             
             
             var monsters = CreateMonsterList(player, rand);
-/*
+
             player.Inventory.AddItem(testItem);
             player.Inventory.AddItem(testWeapon);
             player.Inventory.AddItem(testShield);
@@ -61,27 +61,7 @@ namespace ConsoleRPG
             player.Inventory.AddItem(testArmor);
             player.Inventory.AddItem(testHealthPotion);
             player.Inventory.AddItem(testManaPotion);
-
-            Console.WriteLine(player.Inventory.Items[0].ReturnItemName());
-            Console.WriteLine(player.Inventory.Items[1].ReturnItemName());
-            Console.WriteLine(player.Inventory.Items[2].ReturnItemName());
-            Console.WriteLine(player.Inventory.Items[3].ReturnItemName());
-            Console.WriteLine(player.Inventory.Items[4].ReturnItemName());
-            Console.WriteLine(player.Inventory.Items[5].ReturnItemName());
-            Console.WriteLine(player.Inventory.Items[6].ReturnItemName());
-*/
             
-            
-            
-
- 
-
-          
-
-            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
-
-            
-
             
             // game start
             gameStart:

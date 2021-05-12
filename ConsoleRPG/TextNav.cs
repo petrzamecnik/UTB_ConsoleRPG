@@ -134,82 +134,59 @@ namespace ConsoleRPG
             Center(new string('-', 30));
 
 
-            var potions = new List<Potion>();
-            foreach (var item in player.Inventory.Items)
-            {
-                if (item is Potion)
-                {
-                    var potion = (Potion) item;
-                    potions.Add(potion);
-                }
-            }
 
+            var weapons = player.Inventory.Items.OfType<Weapon>().ToList();
+            foreach (var weapon in weapons)
+            {
+                Center($"{weapon.ReturnItemName()}");
+                Center($"Bonus attack: {weapon.ReturnBonusAttack()}");
+                Center(new string('-', 30));
+            }
+            
+            var shields = player.Inventory.Items.OfType<Shield>().ToList();
+            foreach (var shield in shields)
+            {
+                Center($"{shield.ReturnItemName()}");
+                Center($"Bonus attack: {shield.ReturnBonusDefense()}");
+                Center(new string('-', 30));
+            }
+            
+            var helmets = player.Inventory.Items.OfType<Helmet>().ToList();
+            foreach (var helmet in helmets)
+            {
+                Center($"{helmet.ReturnItemName()}");
+                Center($"Bonus attack: {helmet.ReturnBonusDefense()}");
+                Center(new string('-', 30));
+            }
+            
+            var armors = player.Inventory.Items.OfType<Armor>().ToList();
+            foreach (var armor in armors)
+            {
+                Center($"{armor.ReturnItemName()}");
+                Center($"Bonus attack: {armor.ReturnBonusDefense()}");
+                Center(new string('-', 30));
+            }
+            
+
+
+            var potions = player.Inventory.Items.OfType<Potion>().ToList();
             foreach (var potion in potions)
             {
                 Center($"{potion.ReturnItemName()}");
-                Center($"{potion.ReturnHealthRegenAmount()}");
-                Center($"{potion.ReturnManaRegenAmount()}");
+                Center($"Health regen: {potion.ReturnHealthRegenAmount()}");
+                Center($"Mana regen: {potion.ReturnManaRegenAmount()}");
+                Center(new string('-', 30));
             }
-            
-            
-
+  
             while (Console.ReadKey().Key != ConsoleKey.Enter) { }
-
             
-            
-            /*
-            foreach (var item in player.Inventory.Items)
-            {
-                switch (item)
-                {
-                    case Weapon:
-                        Center($"{item.ReturnItemName()}");
-                        Center($"Bonus attack: {Weapon.ReturnBonusAttack()}");
-                        Center(new string('-', 30));
-                        break;
-                    
-                    case Shield:
-                        Center($"{item.ReturnItemName()}");
-                        Center($"Bonus defense: {Shield.ReturnBonusDefense()}");
-                        Center(new string('-', 30));
-                        break;
-                    
-                    case Helmet:
-                        Center($"{item.ReturnItemName()}");
-                        Center($"Bonus defense: {Helmet.ReturnBonusDefense()}");
-                        Center(new string('-', 30));
-                        break;
-                    
-                    case Armor:
-                        Center($"{item.ReturnItemName()}");
-                        Center($"Bonus defense: {Armor.ReturnBonusDefense()}");
-                        Center(new string('-', 30));
-                        break;
-                    
-                    case Potion:
-                        Center($"{item.ReturnItemName()}");
-                        Center($"Health regen: {Potion.ReturnHealthRegenAmount()}");
-                        Center($"Mana regen: {Potion.ReturnManaRegenAmount()}");
-                        Center(new string('-', 30));
-                        break;
-
-                        
-                }
-            }
-        */    
-            
-            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
-
         }
-
-
-
-
-            public static void EquipItem(Player player)
+        
+        public static void EquipItem(Player player)
         {
             ViewInventory(player);
-            
-            
+        
+        
         }
     }
 }
