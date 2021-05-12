@@ -61,10 +61,10 @@ namespace ConsoleRPG
             Center($"Experience needed: {player.ReturnMaxExperience()}");
             Console.WriteLine();
             Center(new string('-', 40));    
-            Center($"Weapon -> {actualWeapon.ReturnItemName()}  - {actualWeapon.ReturnBonusAttack()} bonus damage");
+            Center($"Weapon -> {actualWeapon.ReturnItemName()}  - {actualWeapon.ReturnBonusAttack()}  bonus damage");
             Center($"Shield -> {actualShield.ReturnItemName()}  - {actualShield.ReturnBonusDefense()} bonus defense");
             Center($"Helmet -> {actualHelmet.ReturnItemName()}  - {actualHelmet.ReturnBonusDefense()} bonus defense");
-            Center($"Armor -> {actualArmor.ReturnItemName()}    - {actualArmor.ReturnBonusDefense()} bonus defense");
+            Center($"Armor  -> {actualArmor.ReturnItemName()}   - {actualArmor.ReturnBonusDefense()}  bonus defense");
             Center(new string('-', 40));    
 
 

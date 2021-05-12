@@ -52,6 +52,8 @@ namespace ConsoleRPG.Characters
             return (Weapon, Shield, Helmet, Armor);
         }
 
+
+
         public void AttackAction(Character target)
         {
             //Console.WriteLine(new string('*', 60));
@@ -329,24 +331,28 @@ namespace ConsoleRPG.Characters
         {
             Attack -= Weapon.ReturnBonusAttack();
             Attack += newWeapon.ReturnBonusAttack();
+            Weapon = newWeapon;
         }
 
         public void EquipNewShield(Shield newShield)
         {
             Defense -= Shield.ReturnBonusDefense();
             Defense += newShield.ReturnBonusDefense();
+            Shield = newShield;
         }
 
         public void EquipNewHelmet(Helmet newHelmet)
         {
             Defense -= Helmet.ReturnBonusDefense();
             Defense += newHelmet.ReturnBonusDefense();
+            Helmet = newHelmet;
         }
 
         public void EquipNewArmor(Armor newArmor)
         {
             Defense -= Armor.ReturnBonusDefense();
             Defense += newArmor.ReturnBonusDefense();
+            Armor = newArmor;
         }
     }
 }

@@ -80,15 +80,15 @@ namespace ConsoleRPG
             var mediumHybridPotion = new Potion("Medium Hybrid Potion", 60, 60, 60);
             var largeHybridPotion = new Potion("Large Hybrid Potion", 90, 90, 90);
 
-            var items1To5 = new List<Item>()
+            var items1To5 = new List<Item>
             {
                 stoneSword, woodenStickOfDoom,
                 ironShield,
-                ironHelmet, reinforcedIronHelmet,
-                ironArmor, reinforcedIronArmor
+                ironHelmet, 
+                ironArmor
             };
 
-            var items6To10 = new List<Item>()
+            var items6To10 = new List<Item>
             {
                 ironSword,
                 ironShield,
@@ -96,7 +96,7 @@ namespace ConsoleRPG
                 ironArmor, reinforcedIronArmor
             };
 
-            var items11To20 = new List<Item>()
+            var items11To20 = new List<Item>
             {
                 ironSword, brutalBattleAxe, fieryRapier,
                 ironShield, ironDome, hugeLifeSavingBarrier,
@@ -122,7 +122,7 @@ namespace ConsoleRPG
             player.Inventory.AddItem(smallManaPotion);
             
 
-            var monsters = CreateMonsterList(player, rand);
+            var monsters = CreateMonsterList(player, rand, items1To5, items6To10, items11To20);
             
             
             // game start
@@ -146,7 +146,7 @@ namespace ConsoleRPG
             }
             catch
             {
-                monsters = RiseNewMonsters(player, rand);
+                monsters = RiseNewMonsters(player, rand, items1To5, items6To10, items11To20);
                 goto gameStart;
             }
             
@@ -211,7 +211,7 @@ namespace ConsoleRPG
 
         }
 
-        private static List<Monster> RiseNewMonsters(Player player, Rand rand)
+        private static List<Monster> RiseNewMonsters(Player player, Rand rand, List<Item> items1To5, List<Item> items6To10, List<Item> items11To20)
         {
             Console.Clear();
             Center("You have killed all monster nearby!");
@@ -222,12 +222,12 @@ namespace ConsoleRPG
             Center("...");
             System.Threading.Thread.Sleep(1000);
             Center("New monsters are rising. Good luck warrior!");
-            return CreateMonsterList(player, rand);
+            return CreateMonsterList(player, rand, items1To5, items6To10, items11To20);
         }
 
 
         // Method for battle
-        private static void Battle(Player player, Monster actualEnemy, Random rand, List<Monster> monsters)
+        private static void Battle(Player player, Monster actualEnemy, Rand rand, List<Monster> monsters)
         {
             for (var i = 0; player.IsAlive() && actualEnemy.IsAlive() && !player.ReturnRunState(); i++)
             {
@@ -300,6 +300,7 @@ namespace ConsoleRPG
                 Console.Clear();
                 CenterCol("!CONGRATULION!", "cyan");
                 CenterCol("Monster has been slain!", "cyan");
+                GetItem(player, actualEnemy, rand);
                 player.GainExperience(Convert.ToInt32(Math.Floor(actualEnemy.ReturnCharacterMaxHealth() * 0.6)));
                 Center($"Experience gained: {Convert.ToInt32(Math.Floor(actualEnemy.ReturnCharacterMaxHealth() * 0.6))}");
                 player.TryToLevelUp();
@@ -307,6 +308,16 @@ namespace ConsoleRPG
                 System.Threading.Thread.Sleep(3000);
                 
             }
+        }
+
+        private static void GetItem(Player player, Monster enemy, Rand rand)
+        {
+            var itemIndex = rand.Next(0, enemy.Inventory.Items.Count);
+            if (enemy.Inventory.Items.Count == 0) return;
+            
+            player.Inventory.AddItem(enemy.Inventory.Items[itemIndex]);
+            CenterCol($"{player.ReturnCharacterName()} has acquired a new {enemy.Inventory.Items[itemIndex].ReturnItemName()}", "darkyellow");
+            
         }
 
         // Action for player in battle
@@ -354,10 +365,11 @@ namespace ConsoleRPG
         }
 
         // Method to create new monster
-        private static Monster CreateNewMonster(Player player, Random rand)
+        private static Monster CreateNewMonster(Player player, Random rand, List<Item> items1To5, List<Item> items6To10, List<Item> items11To20)
         {
             // get list of monster names
             var nameList = ReturnNameOfNewMonster();
+            List<Item> itemList = new List<Item>();
 
             // choose name for monster
             var monsterName = nameList[rand.Next(1, nameList.Count)].Trim();
@@ -369,9 +381,27 @@ namespace ConsoleRPG
             var monsterAttack = 10 + (5 * playerLevel) * Convert.ToInt32(rand.Next(1, 300 + 1) / 100);
             var monsterDefence = 5 + (5 * playerLevel) * Convert.ToInt32(rand.Next(1,300 +1) / 100);
 
+            if (playerLevel >= 1 && playerLevel <= 5)
+            {
+                itemList = items1To5;
+            }
+            else if (playerLevel >= 6 && playerLevel <= 10)
+            {
+                itemList = items6To10;
+            }
+            else if (playerLevel >= 11 && playerLevel <= 20)
+            {
+                itemList = items11To20;
+            }
+
             var monster = new Monster(monsterName, monsterLevel, monsterHealth, monsterMaxHealth, monsterAttack,
                 monsterDefence, false, 0, new Inventory(new List<Item>()));
             
+            if (rand.Next(1, 100) > 80)
+            {
+                monster.Inventory.AddItem(itemList[rand.Next(0, itemList.Count)]);
+            }
+
             return monster;
         }
 
@@ -393,13 +423,13 @@ namespace ConsoleRPG
         }
 
         // Method to create new list of monsters
-        private static List<Monster> CreateMonsterList(Player player, Random rand)
+        private static List<Monster> CreateMonsterList(Player player, Random rand, List<Item> items1To5, List<Item> items6To10, List<Item> items11To20)
         {
-            var monster1 = CreateNewMonster(player, rand);
-            var monster2 = CreateNewMonster(player, rand);
-            var monster3 = CreateNewMonster(player, rand);
-            var monster4 = CreateNewMonster(player, rand);
-            var monster5 = CreateNewMonster(player, rand);
+            var monster1 = CreateNewMonster(player, rand, items1To5, items6To10, items11To20);
+            var monster2 = CreateNewMonster(player, rand, items1To5, items6To10, items11To20);
+            var monster3 = CreateNewMonster(player, rand, items1To5, items6To10, items11To20);
+            var monster4 = CreateNewMonster(player, rand, items1To5, items6To10, items11To20);
+            var monster5 = CreateNewMonster(player, rand, items1To5, items6To10, items11To20);
 
             var monsterList = new List<Monster>()
             {
