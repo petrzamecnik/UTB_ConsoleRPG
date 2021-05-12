@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using ConsoleRPG.Characters;
 using ConsoleRPG.Items;
+using static ConsoleRPG.BetterConsole;
 
 
 namespace ConsoleRPG
@@ -33,7 +34,6 @@ namespace ConsoleRPG
             CenterWrite("Choose name for your character: ");
             //var heroName = Console.ReadLine();
             const string heroName = "Eric";
-
 
             var testWeapon = new Weapon("testWeapon", 10, 10);
             var testWeapon2 = new Weapon("Brutal Battle Axe", 10, 20);
@@ -133,7 +133,7 @@ namespace ConsoleRPG
                     goto gameStart;
                     
                 case 5:
-                    WriteGeneralInfo(player, monsters);
+                    TextNav.WriteGeneralInfo(player, monsters);
                     goto gameStart;
                     
                 case 6:
@@ -150,7 +150,7 @@ namespace ConsoleRPG
 
         private static void WriteNewMonster(Character player, Character enemy)
         {
-            Console.WriteLine($"{player.ReturnCharacterName()} is facing a new monster -> {enemy.ReturnCharacterName()}");
+            Col($"{player.ReturnCharacterName()} is facing a new monster -> {enemy.ReturnCharacterName()}", "cyan");
 
         }
 
@@ -178,10 +178,9 @@ namespace ConsoleRPG
                 Console.WriteLine();
                 Console.WriteLine(new string('*', 60));
                 Console.WriteLine($"Round: {i}");
-                Console.WriteLine($"{player.ReturnCharacterName()}'s health: {player.ReturnCharacterHealth()}" +
-                                  $"  ||  " +
-                                  $"{player.ReturnCharacterName()}'s mana: {player.ReturnPlayerMana()}");
-                Console.WriteLine($"{actualEnemy.ReturnCharacterName()}'s health: {actualEnemy.ReturnCharacterHealth()}");
+                Col($"{player.ReturnCharacterName()}'s health: {player.ReturnCharacterHealth()}", "darkgreen");
+                Col($"{player.ReturnCharacterName()}'s mana: {player.ReturnPlayerMana()}", "blue");
+                Col($"{actualEnemy.ReturnCharacterName()}'s health: {actualEnemy.ReturnCharacterHealth()}", "darkyellow");
                 Console.WriteLine(new string('*', 60));
                 
 
@@ -199,7 +198,7 @@ namespace ConsoleRPG
                 if (actualEnemy.IsAlive() && !actualEnemy.IsStunned())
                 {
                     // give chance to run away, if that fails, then fight
-                    RunAway(actualEnemy, rand);
+                    RunAway(actualEnemy, rand, actualEnemy, monsters);
                     actualEnemy.BasicAttack(player);
                 }
                 else if (actualEnemy.IsAlive() && actualEnemy.IsStunned())
@@ -240,9 +239,10 @@ namespace ConsoleRPG
             // get exp, level up, remove monster from list
             if (!actualEnemy.IsAlive())
             {
+                System.Threading.Thread.Sleep(1500);
                 Console.Clear();
-                Center("!CONGRATULION!");
-                Center("Monster has been slain!");
+                CenterCol("!CONGRATULION!", "cyan");
+                CenterCol("Monster has been slain!", "cyan");
                 player.GainExperience(Convert.ToInt32(Math.Floor(actualEnemy.ReturnCharacterMaxHealth() * 0.6)));
                 Center($"Experience gained: {Convert.ToInt32(Math.Floor(actualEnemy.ReturnCharacterMaxHealth() * 0.6))}");
                 player.TryToLevelUp();
@@ -253,8 +253,9 @@ namespace ConsoleRPG
         }
 
         // Action for player in battle
-        private static void PlayerBattleActions(Player player, Monster actualEnemy)
+        public static void PlayerBattleActions(Player player, Monster actualEnemy)
         {
+            battleActionChoice:
             Console.WriteLine("It's your turn!");
             Console.WriteLine("1 - Attack");
             Console.WriteLine("2 - Cast Spell");
@@ -280,8 +281,8 @@ namespace ConsoleRPG
                     break;
                     
                 case 3: 
-                    player.UsePotionAction();
-                    break;
+                    player.UsePotionAction(player);
+                    goto battleActionChoice;
                 
                 case 4: 
                     player.Run(player);
@@ -346,14 +347,15 @@ namespace ConsoleRPG
         }
         
         // Method to give monster chance to run away
-        private static void RunAway(Character character, Random rnd)
+        private static void RunAway(Character character, Random rnd, Monster enemy, List<Monster> monsters)
         {
             if (character.Health < character.ReturnCharacterMaxHealth() * 0.2)
             {
                 if (rnd.Next(0, 100) > 90)
                 {
                     Console.WriteLine($"{character.ReturnCharacterName()} has run away!");
-                    
+                    monsters.Remove(enemy);
+
                 }
             }
         }
@@ -364,169 +366,6 @@ namespace ConsoleRPG
             allCharacters.AddRange(monsters.Cast<Character>());
 
             return allCharacters;
-        }
-        
-        private static void WriteGeneralInfo(Player player, List<Monster> monsters)
-        {
-            var averageCharacterPower = ReturnAllCharacters(player, monsters)
-                .Average(ch => ch.CalculatePower());
-            
-            var characterWithLowestPower = ReturnAllCharacters(player, monsters)
-                .Min(ch => ch.CalculatePower());
-            
-            var characterWithHighestPower = ReturnAllCharacters(player, monsters)
-                .Max(ch => ch.CalculatePower());
-            
-            var characterWithPowerHigherThanAverage = ReturnAllCharacters(player, monsters)
-                .FindAll(ch => ch.CalculatePower() > averageCharacterPower);
-            
-            var lastCharacterWithPowerLowerThanAverage = ReturnAllCharacters(player, monsters)
-                .FindLast(ch => ch.CalculatePower() < averageCharacterPower);
-            
-            var onlyHero = ReturnAllCharacters(player, monsters).FindAll(ch => ch is Player);
-            
-            var averageDamage = ReturnAllCharacters(player, monsters).Average(ch => ch.ReturnCharacterAttack());
-
-            var averageDefence = ReturnAllCharacters(player, monsters).Average(ch => ch.ReturnCharacterDefense());
-
-            var higherThanOneQuarter = ReturnAllCharacters(player, monsters)
-                .FindAll(ch => ch.ReturnCharacterDefense() > (averageDefence / 4));
-            
-            
-            Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine();
-            Center(new string('*', 30));
-            Center("Press [ENTER] to return back.");
-            Center(new string('*', 30));
-            Console.WriteLine();
-            
-            Center($"Average power of characters: {Math.Round(averageCharacterPower, 2)}");
-            Center(new string('-', 60));
-            
-            // !! Zeptat se jestli tohle jde dát na více řádků !!
-            Center($"Weakest character: {ReturnAllCharacters(player, monsters).Find(ch => Math.Abs(ch.CalculatePower() - characterWithLowestPower) < 0.3).ReturnCharacterName()} - " +
-                   $"{characterWithLowestPower}");
-            Center(new string('-', 60));
-
-            Center($"Strongest character: {ReturnAllCharacters(player, monsters).Find(ch => Math.Abs(ch.CalculatePower() - characterWithHighestPower) < 0.3).ReturnCharacterName()} - " +
-                   $"{characterWithHighestPower}");
-            Center(new string('-', 60));
-
-            Center($"Characters with higher power than average: ");
-            foreach (var ch in characterWithPowerHigherThanAverage)
-            {
-                Center($"{ch.ReturnCharacterName()} -> {ch.CalculatePower()}");
-            }
-            Center(new string('-', 60));
-
-            
-            Center($"Last listed character with power value lower than average: ");
-            Center($"{lastCharacterWithPowerLowerThanAverage.ReturnCharacterName()} - {lastCharacterWithPowerLowerThanAverage.CalculatePower()}");
-            Center(new string('-', 60));
-
-            
-            Center($"Player's character: {player.ReturnCharacterName()} - {player.CalculatePower()}");
-            Center(new string('-', 60));
-
-            
-            // characters that remain after removing all characters,
-            // that have maximum damage lower than half of the average
-            // nelze :(
-            
-            Center("All character's that have lower defence then one quarter of average: ");
-            foreach (var ch in higherThanOneQuarter)
-            {
-                Center($"{ch.ReturnCharacterName()} - {ch.ReturnCharacterDefense()}");
-            }
-
-            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
-        }
-
-        // Setup Console
-        private static void SetupConsole()
-        {
-            Console.WindowWidth = 120;
-            Console.WindowHeight = 40;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-
-
-        }
-
-        // Method to center string
-        public static void Center(string message)
-        {
-            var screenWidth = Console.WindowWidth;
-            var stringWidth = message.Length;
-            //var consoleHeight = Console.WindowHeight;
-            var spaces = (screenWidth / 2) + (stringWidth / 2);
-            Console.WriteLine(message.PadLeft(spaces));
-        }
-        
-        // Method to center string ( write )
-        public static void CenterWrite(string message)
-        {
-            var screenWidth = Console.WindowWidth;
-            var stringWidth = message.Length;
-            var spaces = (screenWidth / 2) + (stringWidth / 2);
-            Console.Write(message.PadLeft(spaces));
-        }
-        public static void Col(string input,string colorName)
-        {
-            Console.ForegroundColor = colorName switch
-            {
-                    "Yellow" => ConsoleColor.Yellow,
-                    "DYellow"=>ConsoleColor.DarkYellow,
-                    "Red" => ConsoleColor.Red,
-                    "DGreen" => ConsoleColor.DarkGreen,
-                    "Blue" => ConsoleColor.Blue,
-                    "Cyan" => ConsoleColor.Cyan,
-                    "White" => ConsoleColor.White,
-                    _ => Console.ForegroundColor
-                    
-            };
-            Console.WriteLine(input);
-            Console.ResetColor();
-        }
-
-        public static void CenterCol(string input, string colorName)
-        {
-            var screenWidth = Console.WindowWidth;
-            var stringWidth = input.Length;
-            var spaces = (screenWidth / 2) + (stringWidth / 2);
-            
-            Console.ForegroundColor = colorName switch
-            {
-                "Yellow" => ConsoleColor.Yellow,
-                "DYellow"=>ConsoleColor.DarkYellow,
-                "Red" => ConsoleColor.Red,
-                "DGreen" => ConsoleColor.DarkGreen,
-                "Blue" => ConsoleColor.Blue,
-                "Cyan" => ConsoleColor.Cyan,
-                "White" => ConsoleColor.White,
-                _ => Console.ForegroundColor
-                    
-            };
-            Console.WriteLine(input.PadLeft(spaces));
-            Console.ResetColor();
-        }
-        
-        public static void ColWrite(string input,string colorName)
-        {
-            Console.ForegroundColor = colorName switch
-            {
-                "Yellow" => ConsoleColor.Yellow,
-                "DYellow"=>ConsoleColor.DarkYellow,
-                "Red" => ConsoleColor.Red,
-                "DGreen" => ConsoleColor.DarkGreen,
-                "Blue" => ConsoleColor.Blue,
-                "Cyan" => ConsoleColor.Cyan,
-                "White" => ConsoleColor.White,
-                _ => Console.ForegroundColor
-                    
-            };
-            Console.Write(input);
-            Console.ResetColor();
         }
     }
 }

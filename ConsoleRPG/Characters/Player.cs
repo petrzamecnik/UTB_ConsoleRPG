@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using ConsoleRPG.Items;
 using static System.Environment;
+using static ConsoleRPG.BetterConsole;
 
 namespace ConsoleRPG.Characters
 {
@@ -44,27 +47,9 @@ namespace ConsoleRPG.Characters
             Defense += Shield.ReturnBonusDefense() + Helmet.ReturnBonusDefense() + Armor.ReturnBonusDefense();
         }
 
-        public void EquipItem(Item item)
+        public (Weapon, Shield, Helmet, Armor) ReturnEquippedItems()
         {
-            switch (item)
-            {
-                /*
-                case Weapon weapon:
-                    Weapon = weapon;
-                    break;
-                */
-                case Shield shield:
-                    Shield = shield;
-                    break;
-                
-                case Helmet helmet:
-                    Helmet = helmet;
-                    break;
-                
-                case Armor armor:
-                    Armor = armor;
-                    break;
-            }
+            return (Weapon, Shield, Helmet, Armor);
         }
 
         public void AttackAction(Character target)
@@ -92,21 +77,41 @@ namespace ConsoleRPG.Characters
 
         }
 
-        public void CastSpellAction(Player player, Character target)
+        public void CastSpellAction(Player player, Monster target)
         {
+            castSpellAction:
             //Console.WriteLine(new string('*', 60));
+            Console.WriteLine("0 - return");
             Console.WriteLine("1 - Heal     [heal yourself (30 mana)]");
             Console.WriteLine("2 - Fireball [chance to miss, high damange (50 mana)]");
             Console.WriteLine("3 - Freeze   [chance to freeze enemy for 2-3 turns [(80 mana)]");
             Console.Write("Choose type of spell --> ");
-            var actionChoice = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine();
             //Console.WriteLine(new string('*', 60));
+            
+            var actionChoiceInput = Console.ReadLine();
+
+            if (!int.TryParse(actionChoiceInput, out var actionChoice))
+            {
+                Col("*** Choice is not valid! ***", "red");
+
+                goto castSpellAction;
+            }
+
+            if (actionChoice > 4 || actionChoice < 0 )
+            {
+                Col("*** Choice is not valid! ***", "red");
+                goto castSpellAction;
+            }
 
             switch (actionChoice)
             {
+                case 0:
+                    Program.PlayerBattleActions(player, target);
+                    break;
+                
                 case 1:
                     Heal(player);
                     break;
@@ -121,16 +126,61 @@ namespace ConsoleRPG.Characters
             }
         }
 
-        public void UsePotionAction()
+        public void UsePotionAction(Player player)
         {
-            throw new NotImplementedException();
+            choosePotion:
+            var potions = player.Inventory.Items.OfType<Potion>().ToList();
+            var potionIndex = 1;
+            
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            Center("Available potions:");
+            foreach (var potion in potions)
+            {
+                Center($"{potionIndex} -> {potion.ReturnItemName()} - " +
+                       $"Regenerate {potion.ReturnHealthRegenAmount()} health & {potion.ReturnManaRegenAmount()} mana.");
+                potionIndex++;
+            }
+            
+            var actionChoiceInput = Console.ReadLine();
+            Console.Clear();
+            if (!int.TryParse(actionChoiceInput, out var actionChoice))
+            {
+                
+                Center("*** Choice is not valid! ***");
+                goto choosePotion;
+            }
+
+            if (actionChoice >= potionIndex || actionChoice < 0 )
+            {
+                Center("*** Choice is not valid! ***");
+                goto choosePotion;
+            }
+
+            if (actionChoice == 0)
+            {
+                return;
+            }
+            player.UsePotion(potions[actionChoice - 1]);
+        }
+
+        private void UsePotion(Potion potion)
+        {
+            Health += potion.ReturnHealthRegenAmount();
+            Mana += potion.ReturnManaRegenAmount();
+            Inventory.Items.Remove(potion);
+            Col($"{Name} has used potion and regenerated: {potion.ReturnHealthRegenAmount()}" +
+                              $" health & {potion.ReturnManaRegenAmount()} mana", "darkgreen");
         }
 
         public void Run(Player player)
         {
-            var amount = 10;
-            Console.WriteLine($"{player.ReturnCharacterName()} has run!");
-            Console.WriteLine($"{player.ReturnCharacterName()} has been penalized by -{amount}% maximum health");
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            CenterCol($"{player.ReturnCharacterName()} has run!", "red");
+            CenterCol($"{player.ReturnCharacterName()} has been penalized by -{10}% maximum health", "red");
             player.ReduceMaximumHealth(10);
             player.RunningAway = true;
             System.Threading.Thread.Sleep(5000);
@@ -145,7 +195,7 @@ namespace ConsoleRPG.Characters
         public override void BasicAttack(Character target)
         {
             target.Health -= Attack;
-            Console.WriteLine($"{Name} attacked for {Attack} damage");
+            Col($"{Name} attacked for {Attack} damage", "yellow");
         }
         
         /* Spells here */
@@ -158,7 +208,7 @@ namespace ConsoleRPG.Characters
                 var healAmount = Convert.ToInt32(Math.Round(MaxHealth * 0.2));
 
                 Health += healAmount;
-                Console.WriteLine($"{player.ReturnCharacterName()} has healed himself for {healAmount} health");
+                Col($"{player.ReturnCharacterName()} has healed himself for {healAmount} health", "darkgreen");
             }
             
             if (Health > MaxHealth)
@@ -175,13 +225,12 @@ namespace ConsoleRPG.Characters
                 {
                     var damage = Convert.ToInt32(Math.Round(player.Attack * 1.8));
                     target.Health -= damage;
-                    Console.WriteLine($"{player.ReturnCharacterName()} has used Fireball and hit enemy for {damage} damage");
+                    Col($"{player.ReturnCharacterName()} has used Fireball and hit enemy for {damage} damage", "blue");
                 }
                 else
                 {
-                    Console.WriteLine($"{target.ReturnCharacterName()} has dodged the attack!");
-                    
-                    
+                    Col($"{target.ReturnCharacterName()} has dodged the attack!", "Red");
+ 
                 }
             }
         }
@@ -196,11 +245,11 @@ namespace ConsoleRPG.Characters
                 {
                     var freezeTime = rnd.Next(2, 3);
                     target.StunnedForXTurns += freezeTime;
-                    Console.WriteLine($"{player.ReturnCharacterName()} has succesfuly freezed the enemy for {freezeTime} rounds! ");
+                    Col($"{player.ReturnCharacterName()} has succesfuly freezed the enemy for {freezeTime} rounds! ", "blue");
                 }
                 else
                 {
-                    Console.WriteLine($"{player.ReturnCharacterName()} has failed to hit the freeze spell!");
+                    Col($"{player.ReturnCharacterName()} has failed to hit the freeze spell!", "red");
                 }
             }
         }

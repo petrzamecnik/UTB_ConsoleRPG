@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using ConsoleRPG.Characters;
 using ConsoleRPG.Items;
+using static ConsoleRPG.BetterConsole;
 using static ConsoleRPG.Program;
 
 
@@ -13,8 +14,25 @@ namespace ConsoleRPG
     public class TextNav
     {
 
+        public static void RainbowWorld()
+        {
+            Col("Lorem ipsum", "Yellow");
+            Col("Lorem ipsum", "DYellow");
+            Col("Lorem ipsum", "Red");
+            Col("Lorem ipsum", "DGreen");
+            Col("Lorem ipsum", "Blue");
+            Col("Lorem ipsum", "Cyan");
+            Col("Lorem ipsum", "White");
+
+            Console.ReadKey();
+            Console.Clear();
+        }
+        
         public static void ViewCharacter(Player player)
         {
+            var (actualWeapon, actualShield, actualHelmet, actualArmor) = player.ReturnEquippedItems();
+
+            
             Console.Clear();
             Console.WriteLine();
             Console.WriteLine();
@@ -29,8 +47,7 @@ namespace ConsoleRPG
             Center(new string('-', 30));
             Console.WriteLine();
             Center($"Level: {player.ReturnCharacterLevel()}");
-            Center($"Maximum health: {player.ReturnCharacterMaxHealth()}");
-            Center($"Actual Health: {player.ReturnCharacterHealth()}");
+            Center($"Health: {player.ReturnCharacterHealth()} / {player.ReturnCharacterMaxHealth()}");
             Center($"Mana: {player.ReturnPlayerMana()} / {player.ReturnPlayerMaxMana()}");
             Console.WriteLine();
             Center(new string('-', 30));
@@ -43,7 +60,13 @@ namespace ConsoleRPG
             Center($"Experience: {player.ReturnExperience()}");
             Center($"Experience needed: {player.ReturnMaxExperience()}");
             Console.WriteLine();
-            Center(new string('-', 30));
+            Center(new string('-', 40));    
+            Center($"Weapon -> {actualWeapon.ReturnItemName()}  - {actualWeapon.ReturnBonusAttack()} bonus damage");
+            Center($"Shield -> {actualShield.ReturnItemName()}  - {actualShield.ReturnBonusDefense()} bonus defense");
+            Center($"Helmet -> {actualHelmet.ReturnItemName()}  - {actualHelmet.ReturnBonusDefense()} bonus defense");
+            Center($"Armor -> {actualArmor.ReturnItemName()}    - {actualArmor.ReturnBonusDefense()} bonus defense");
+            Center(new string('-', 40));    
+
 
             while (Console.ReadKey().Key != ConsoleKey.Enter) { }
         }
@@ -104,18 +127,83 @@ namespace ConsoleRPG
             while (Console.ReadKey().Key != ConsoleKey.Enter) { }
         }
         
-        public static void RainbowWorld()
-        {
-            Col("Lorem ipsum", "Yellow");
-            Col("Lorem ipsum", "DYellow");
-            Col("Lorem ipsum", "Red");
-            Col("Lorem ipsum", "DGreen");
-            Col("Lorem ipsum", "Blue");
-            Col("Lorem ipsum", "Cyan");
-            Col("Lorem ipsum", "White");
 
-            Console.ReadKey();
+
+        public static void WriteGeneralInfo(Player player, List<Monster> monsters)
+        {
+            var averageCharacterPower = ReturnAllCharacters(player, monsters)
+                .Average(ch => ch.CalculatePower());
+            
+            var characterWithLowestPower = ReturnAllCharacters(player, monsters)
+                .Min(ch => ch.CalculatePower());
+            
+            var characterWithHighestPower = ReturnAllCharacters(player, monsters)
+                .Max(ch => ch.CalculatePower());
+            
+            var characterWithPowerHigherThanAverage = ReturnAllCharacters(player, monsters)
+                .FindAll(ch => ch.CalculatePower() > averageCharacterPower);
+            
+            var lastCharacterWithPowerLowerThanAverage = ReturnAllCharacters(player, monsters)
+                .FindLast(ch => ch.CalculatePower() < averageCharacterPower);
+            
+            var onlyHero = ReturnAllCharacters(player, monsters).FindAll(ch => ch is Player);
+            
+            var averageDamage = ReturnAllCharacters(player, monsters).Average(ch => ch.ReturnCharacterAttack());
+
+            var averageDefence = ReturnAllCharacters(player, monsters).Average(ch => ch.ReturnCharacterDefense());
+
+            var higherThanOneQuarter = ReturnAllCharacters(player, monsters)
+                .FindAll(ch => ch.ReturnCharacterDefense() > (averageDefence / 4));
+            
+            
             Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            Center(new string('*', 30));
+            Center("Press [ENTER] to return back.");
+            Center(new string('*', 30));
+            Console.WriteLine();
+            
+            Center($"Average power of characters: {Math.Round(averageCharacterPower, 2)}");
+            Center(new string('-', 60));
+            
+            // !! Zeptat se jestli tohle jde dát na více řádků !!
+            Center($"Weakest character: {ReturnAllCharacters(player, monsters).Find(ch => Math.Abs(ch.CalculatePower() - characterWithLowestPower) < 0.3).ReturnCharacterName()} - " +
+                   $"{characterWithLowestPower}");
+            Center(new string('-', 60));
+
+            Center($"Strongest character: {ReturnAllCharacters(player, monsters).Find(ch => Math.Abs(ch.CalculatePower() - characterWithHighestPower) < 0.3).ReturnCharacterName()} - " +
+                   $"{characterWithHighestPower}");
+            Center(new string('-', 60));
+
+            Center($"Characters with higher power than average: ");
+            foreach (var ch in characterWithPowerHigherThanAverage)
+            {
+                Center($"{ch.ReturnCharacterName()} -> {ch.CalculatePower()}");
+            }
+            Center(new string('-', 60));
+
+            
+            Center($"Last listed character with power value lower than average: ");
+            Center($"{lastCharacterWithPowerLowerThanAverage.ReturnCharacterName()} - {lastCharacterWithPowerLowerThanAverage.CalculatePower()}");
+            Center(new string('-', 60));
+
+            
+            Center($"Player's character: {player.ReturnCharacterName()} - {player.CalculatePower()}");
+            Center(new string('-', 60));
+
+            
+            // characters that remain after removing all characters,
+            // that have maximum damage lower than half of the average
+            // nelze :(
+            
+            Center("All character's that have lower defence then one quarter of average: ");
+            foreach (var ch in higherThanOneQuarter)
+            {
+                Center($"{ch.ReturnCharacterName()} - {ch.ReturnCharacterDefense()}");
+            }
+
+            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
         }
 
         public static void ViewInventory(Player player)
@@ -405,8 +493,8 @@ namespace ConsoleRPG
                 Center(new string('-', 30));
             }
         }
-        
-        private static void WriteOutPotions(Player player)
+
+        public static void WriteOutPotions(Player player)
         {
             var potions = player.Inventory.Items.OfType<Potion>().ToList();
             foreach (var potion in potions)
@@ -450,9 +538,5 @@ namespace ConsoleRPG
                 Center(new string('-', 30));
             }
         }
-
-        
-
-        
     }
 }

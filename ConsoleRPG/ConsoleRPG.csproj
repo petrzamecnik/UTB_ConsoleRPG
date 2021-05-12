@@ -39,6 +39,7 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="BetterConsole.cs" />
         <Compile Include="Characters\Character.cs" />
         <Compile Include="Characters\Enemy.cs" />
         <Compile Include="Characters\Monster.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using ConsoleRPG.Items;
+using static ConsoleRPG.BetterConsole;
 
 namespace ConsoleRPG.Characters
 {
@@ -13,7 +14,7 @@ namespace ConsoleRPG.Characters
         public override void BasicAttack(Character target)
         {
             target.Health -= Attack;
-            Console.WriteLine($"{Name} attacked for {Attack} damage");
+            Col($"{Name} attacked for {Attack} damage", "yellow");
         }
 
         public override void Fireball(Player player, Character target, Random rnd)
