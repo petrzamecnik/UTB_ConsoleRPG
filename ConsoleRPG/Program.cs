@@ -11,6 +11,7 @@ using System.Threading;
 using ConsoleRPG.Characters;
 using ConsoleRPG.Items;
 using static ConsoleRPG.BetterConsole;
+using CONNECTDATA = System.Runtime.InteropServices.ComTypes.CONNECTDATA;
 
 
 namespace ConsoleRPG
@@ -31,7 +32,6 @@ namespace ConsoleRPG
 
         public static void Main(string[] args)
         {
-            // ./monster_names.txt
             SetupConsole();
             // weapons
             var placeHolderWeapon = new Weapon("Empty", 0, 0);
@@ -70,7 +70,7 @@ namespace ConsoleRPG
             var mediumHealthPotion = new Potion("Medium Health Potion", 30, 60, 0);
             var largeHealthPotion = new Potion("Large Health Potion", 50, 90, 0);
 
-            var smallManaPotion = new Potion("Small Health Potion", 20, 0, 30);
+            var smallManaPotion = new Potion("Small Mana Potion", 20, 0, 30);
             var mediumManaPotion = new Potion("Medium Health Potion", 30, 0, 60);
             var largeManaPotion = new Potion("Large Health Potion", 50, 0, 90);
 
@@ -110,20 +110,6 @@ namespace ConsoleRPG
             Monster enemy = null;
             string heroName = null;
             
-
-            /*
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(@"C:\Users\petrz\RiderProjects\ConsoleRPG\ConsoleRPG\savefile.txt",
-                FileMode.Create, FileAccess.Write);
-            */
-            
-            //GameSetupController(stream, formatter);
-            
-            
-
-            //CheckAvailableSaves();
-            
-            
             Center("Welcome to ConsoleRPG");
             CenterWrite("Choose name for your character: ");
 
@@ -149,13 +135,7 @@ namespace ConsoleRPG
             player.Inventory.AddItem(smallHealthPotion);
             player.Inventory.AddItem(smallManaPotion);
             
-            var defaultSavePath = "./savefile1.txt";
             
-            
-            //formatter.Serialize(stream, player);
-            //stream.Close();
-            
-
 
             var monsters = CreateMonsterList(player, rand, items1To5, items6To10, items11To20);
             
@@ -254,6 +234,7 @@ namespace ConsoleRPG
         {
             Console.Clear();
             saveGame:
+
             CenterColWrite("Enter save name: ", "yellow");
             var saveName = Console.ReadLine();
             saveName = "save - " + saveName + ".txt";
@@ -264,15 +245,18 @@ namespace ConsoleRPG
                 goto saveGame;
             }
 
-            File.Create(saveName);
+            File.Create(saveName).Close();
             
             
             IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream("C:\\Users\\petrz\\RiderProjects\\ConsoleRPG\\ConsoleRPG\\bin\\Debug" + saveName,
+            Stream stream = new FileStream("C:\\Users\\petrz\\RiderProjects\\ConsoleRPG\\ConsoleRPG\\bin\\Debug\\" + saveName,
                 FileMode.Create, FileAccess.Write);
+
+
             
             formatter.Serialize(stream, player);
             stream.Close();
+
             
             CenterCol("Game successfully saved!", "yellow");
             Thread.Sleep(2000);
@@ -280,57 +264,47 @@ namespace ConsoleRPG
         
         private static Player LoadGame()
         {
-            LoadGame:
-            var filePaths = Directory.GetFiles("C:\\Users\\petrz\\RiderProjects\\ConsoleRPG\\ConsoleRPG\\bin\\Debug", "save - *.txt");
-            var filePathIndex = 0;
-            foreach (var filePath in filePaths)
-            {
-                Console.WriteLine($"filePath {filePathIndex}: {filePath}");
-                filePathIndex++;
-            }
+            loadGame:
+            Console.Clear();
+            var filePaths = Directory.GetFiles("C:\\Users\\petrz\\RiderProjects\\ConsoleRPG\\ConsoleRPG\\bin\\Debug\\",
+                "save - *.txt");
 
             var fileNames = filePaths.Select(filePath => Path.GetFileName(filePath)).ToList();
 
             var fileIndex = 0;
             foreach (var fileName in fileNames)
             {
-                Console.WriteLine($"{fileIndex + 1} - {fileName}");
+                Center($"{fileIndex + 1} - {fileName}");
                 fileIndex++;
             }
 
-            Console.WriteLine("Choose which save to load [1, 2, 3 ... ], [0] to return");
-            var actionChoiceInput = Console.ReadLine();
-            
-            if (!int.TryParse(actionChoiceInput, out var actionChoice))
-            {
-                CenterCol("*** Choice is not valid! ***", "red");
-                goto LoadGame;
-            }
-
-            if (actionChoice > fileIndex || actionChoice < 0 )
-            {
-                CenterCol("*** Choice is not valid! ***", "red");
-                goto LoadGame;
-            }
+            CenterCol("Choose which save to load [1, 2, 3 ... ], [0] to return", "yellow");
+            var actionChoice = Convert.ToInt32(Console.ReadLine());
 
             if (actionChoice == 0)
             {
-                return null;
+                //return null;
             }
 
-            Console.ReadKey();
-            
-            
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(filePaths[actionChoice - 1],
-                FileMode.Open, FileAccess.Read);
+            try
+            {
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(filePaths[actionChoice - 1],
+                    FileMode.Open, FileAccess.Read);
 
-            var player = (Player)formatter.Deserialize(stream);
-            stream.Close();
+                var player = (Player)formatter.Deserialize(stream);
+                stream.Close();
 
-            Console.WriteLine($"Loading save: {fileNames[actionChoice]}");
-            Thread.Sleep(2000);
-            return player;
+                CenterCol($"Loading save: {fileNames[actionChoice]}", "cyan");
+                Center(player.ReturnCharacterName());
+                Thread.Sleep(2000);
+                return player;
+            }
+            catch
+            {
+                throw new SaveNotLoadedProperlyException();
+            }
+            
         }
 
         private static void GameSetupController(Player player)
@@ -358,7 +332,7 @@ namespace ConsoleRPG
                     return;
                 case 2:
                     player = LoadGame();
-                    break;
+                    return;
                 
                 default:
                     CenterCol("*** Choice is not valid! ***", "red");
@@ -503,13 +477,13 @@ namespace ConsoleRPG
 
             if (!int.TryParse(actionChoiceInput, out var actionChoice))
             {
-                Console.WriteLine("*** Not valid choice ***");
+                Col("*** Choice is not valid! ***", "red");
                 PlayerBattleActions(player, actualEnemy);
             }
 
             if (actionChoice > 4 || actionChoice <= 0)
             {
-                Console.WriteLine("*** Not valid choice ***");
+                Col("*** Choice is not valid! ***", "red");
                 PlayerBattleActions(player, actualEnemy);
             }
 
@@ -566,7 +540,7 @@ namespace ConsoleRPG
             var monster = new Monster(monsterName, monsterLevel, monsterHealth, monsterMaxHealth, monsterAttack,
                 monsterDefence, false, 0, new Inventory(new List<Item>()));
             
-            if (rand.Next(1, 100) > 80)
+            if (rand.Next(1, 100) > 20)
             {
                 monster.Inventory.AddItem(itemList[rand.Next(0, itemList.Count)]);
             }
@@ -656,6 +630,20 @@ namespace ConsoleRPG
             : base(ex)
         {
             CenterWrite("Invalid File Path!");
+        }
+    }
+    
+    internal sealed class SaveNotLoadedProperlyException : Exception
+    {
+        public SaveNotLoadedProperlyException()
+        {
+            
+        }
+
+        public SaveNotLoadedProperlyException(string ex)
+            : base(ex)
+        {
+            CenterWrite("Player not loaded properly...");
         }
     }
 }

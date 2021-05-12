@@ -91,9 +91,6 @@ namespace ConsoleRPG.Characters
             Console.WriteLine("2 - Fireball [chance to miss, high damange (50 mana)]");
             Console.WriteLine("3 - Freeze   [chance to freeze enemy for 2-3 turns [(80 mana)]");
             Console.Write("Choose type of spell --> ");
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
             //Console.WriteLine(new string('*', 60));
             
             var actionChoiceInput = Console.ReadLine();
@@ -215,6 +212,10 @@ namespace ConsoleRPG.Characters
                 Health += healAmount;
                 Col($"{player.ReturnCharacterName()} has healed himself for {healAmount} health", "darkgreen");
             }
+            else
+            {
+                Col($"{player.ReturnCharacterName()} had not enough mana and failed!", "red");
+            }
             
             if (Health > MaxHealth)
                 Health = MaxHealth;
@@ -232,11 +233,11 @@ namespace ConsoleRPG.Characters
                     target.Health -= damage;
                     Col($"{player.ReturnCharacterName()} has used Fireball and hit enemy for {damage} damage", "blue");
                 }
-                else
-                {
-                    Col($"{target.ReturnCharacterName()} has dodged the attack!", "Red");
- 
-                }
+                
+            }
+            else
+            {
+                Col($"{player.ReturnCharacterName()} had not enough mana and failed!", "red");
             }
         }
 
@@ -256,6 +257,10 @@ namespace ConsoleRPG.Characters
                 {
                     Col($"{player.ReturnCharacterName()} has failed to hit the freeze spell!", "red");
                 }
+            }
+            else
+            {
+                Col($"{player.ReturnCharacterName()} had not enough mana and failed!", "red");
             }
         }
 

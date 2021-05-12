@@ -14,20 +14,6 @@ namespace ConsoleRPG
     public class TextNav
     {
 
-        public static void RainbowWorld()
-        {
-            Col("Lorem ipsum", "Yellow");
-            Col("Lorem ipsum", "DYellow");
-            Col("Lorem ipsum", "Red");
-            Col("Lorem ipsum", "DGreen");
-            Col("Lorem ipsum", "Blue");
-            Col("Lorem ipsum", "Cyan");
-            Col("Lorem ipsum", "White");
-
-            Console.ReadKey();
-            Console.Clear();
-        }
-        
         public static void ViewCharacter(Player player)
         {
             var (actualWeapon, actualShield, actualHelmet, actualArmor) = player.ReturnEquippedItems();
@@ -83,6 +69,7 @@ namespace ConsoleRPG
                 Center(new string('*', 60));
                 Center("Press [E] to continue to next enemy or [Q] to return back.");
                 Center(new string('*', 60));
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine();
                 Console.WriteLine();
                 Center(new string('-', 40));
@@ -92,6 +79,7 @@ namespace ConsoleRPG
                 Center($"{enemy.ReturnCharacterName()} has {enemy.ReturnCharacterDefense()} defense");
                 Center($"{enemy.ReturnCharacterName()} has {enemy.CalculatePower()} power");
                 Center(new string('-', 40));
+                Console.ForegroundColor = ConsoleColor.White;
 
                 if (Console.ReadKey().Key == ConsoleKey.E)
                 {
@@ -115,12 +103,14 @@ namespace ConsoleRPG
             Center("Press [ENTER] to return back.");
             Center(new string('*', 30));
             Console.WriteLine();
-            CenterCol("All characters sorted by power: ", "yellow");
+            CenterCol("All characters sorted by power: ", "darkyellow");
             Console.WriteLine();
             Console.WriteLine();
             foreach (var character in allCharacters)
             {
-                Center($"{character.ReturnCharacterName()} has {character.CalculatePower()} power points.");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+
+                CenterCol($"{character.ReturnCharacterName()} has {character.CalculatePower()} power points.", "yellow");
                 Console.WriteLine();
             }
 
@@ -155,15 +145,16 @@ namespace ConsoleRPG
             var higherThanOneQuarter = ReturnAllCharacters(player, monsters)
                 .FindAll(ch => ch.ReturnCharacterDefense() > (averageDefence / 4));
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Clear();
             Console.WriteLine();
             Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
             Center(new string('*', 30));
             Center("Press [ENTER] to return back.");
             Center(new string('*', 30));
             Console.WriteLine();
-            
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
             Center($"Average power of characters: {Math.Round(averageCharacterPower, 2)}");
             Center(new string('-', 60));
             
@@ -236,13 +227,13 @@ namespace ConsoleRPG
             Console.Clear();
             Console.WriteLine();
             Console.WriteLine();
-            Center("Choose what item to change [1, 2, 3, 4] or [0] to return back");
             Console.WriteLine();
             Center("1 - Weapon");
             Center("2 - Shield");
             Center("3 - Helmet");
             Center("4 - Armor");
             Console.WriteLine();
+            Center("Choose what item to change [1, 2, 3, 4] or [0] to return back");
             CenterWrite(" --> ");
             var actionChoiceInput = Console.ReadLine();
 
