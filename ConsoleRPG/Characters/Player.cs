@@ -287,5 +287,17 @@ namespace ConsoleRPG.Characters
             Defense -= Shield.ReturnBonusDefense();
             Defense += newShield.ReturnBonusDefense();
         }
+
+        public void EquipNewHelmet(Helmet newHelmet)
+        {
+            Defense -= Helmet.ReturnBonusDefense();
+            Defense += newHelmet.ReturnBonusDefense();
+        }
+
+        public void EquipNewArmor(Armor newArmor)
+        {
+            Defense -= Armor.ReturnBonusDefense();
+            Defense += newArmor.ReturnBonusDefense();
+        }
     }
 }

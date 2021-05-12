@@ -14,7 +14,6 @@ namespace ConsoleRPG
 
         
         // TODO: CLEAN THE CODE!!
-        // TODO: Implement inventory system for player
         // TODO: Implement more actions for player ( shop, crafting? )
         // TODO: Implement enemy item drop
         // TODO: Implement enemy battle logic
@@ -465,7 +464,7 @@ namespace ConsoleRPG
         }
         
         // Method to center string ( write )
-        private static void CenterWrite(string message)
+        public static void CenterWrite(string message)
         {
             var screenWidth = Console.WindowWidth;
             var stringWidth = message.Length;

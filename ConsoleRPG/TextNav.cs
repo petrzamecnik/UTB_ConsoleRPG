@@ -144,12 +144,16 @@ namespace ConsoleRPG
             
             changeEquipment:
             Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
             Center("Choose what item to change [1, 2, 3, 4] or [0] to return back");
-            Center("0 - Return back");
+            Console.WriteLine();
             Center("1 - Weapon");
             Center("2 - Shield");
             Center("3 - Helmet");
             Center("4 - Armor");
+            Console.WriteLine();
+            CenterWrite(" --> ");
             var actionChoiceInput = Console.ReadLine();
 
             if (!int.TryParse(actionChoiceInput, out var actionChoice))
@@ -182,16 +186,14 @@ namespace ConsoleRPG
                     return;
                     
                 case 3:
-                    WriteOutHelmets(player);
-                    goto changeEquipment;
+                    EquipHelmet(player);
+                    return;
                     
-                case 4: WriteOUtArmors(player);
-                    goto changeEquipment;
+                case 4: 
+                    EquipArmor(player);
+                    return;
             }
-            
- 
             while (Console.ReadKey().Key != ConsoleKey.Enter) { }
-
         }
 
         private static void EquipWeapon(Player player)
@@ -289,6 +291,104 @@ namespace ConsoleRPG
 
             player.EquipNewShield(shields[actionChoice - 1]);
             Center($"You have successfully equiped {shields[actionChoice - 1].ReturnItemName()}! ");
+            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
+        }
+        
+        private static void EquipHelmet(Player player)
+        {
+            equipHelmet:
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            var helmets = player.Inventory.Items.OfType<Helmet>().ToList();
+            var itemIndex = 1;
+            Center($"0 -> return back");
+            foreach (var helmet in helmets)
+            {
+                Center($"{itemIndex} -> {helmet.ReturnItemName()} with {helmet.ReturnBonusDefense()} bonus defense");
+                itemIndex++;
+            }
+                    
+            var actionChoiceInput = Console.ReadLine();
+
+            if (!int.TryParse(actionChoiceInput, out var actionChoice))
+            {
+                
+                Center("*** Choice is not valid! ***");
+                goto equipHelmet;
+            }
+
+            if (actionChoice >= itemIndex || actionChoice< 0 )
+            {
+                Center("*** Choice is not valid! ***");
+                goto equipHelmet;
+            }
+
+            if (actionChoice == 0)
+            {
+                return;
+            }
+                    
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            Center(new string('*', 30));
+            Center("Press [ENTER] to return back.");
+            Center(new string('*', 30));
+            Console.WriteLine();
+            Console.WriteLine();
+
+            player.EquipNewHelmet(helmets[actionChoice - 1]);
+            Center($"You have successfully equiped {helmets[actionChoice - 1].ReturnItemName()}! ");
+            while (Console.ReadKey().Key != ConsoleKey.Enter) { }
+        }
+        
+        private static void EquipArmor(Player player)
+        {
+            equipArmor:
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            var armors = player.Inventory.Items.OfType<Armor>().ToList();
+            var itemIndex = 1;
+            Center($"0 -> return back");
+            foreach (var armor in armors)
+            {
+                Center($"{itemIndex} -> {armor.ReturnItemName()} with {armor.ReturnBonusDefense()} bonus defense");
+                itemIndex++;
+            }
+                    
+            var actionChoiceInput = Console.ReadLine();
+
+            if (!int.TryParse(actionChoiceInput, out var actionChoice))
+            {
+                
+                Center("*** Choice is not valid! ***");
+                goto equipArmor;
+            }
+
+            if (actionChoice >= itemIndex || actionChoice< 0 )
+            {
+                Center("*** Choice is not valid! ***");
+                goto equipArmor;
+            }
+
+            if (actionChoice == 0)
+            {
+                return;
+            }
+                    
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine();
+            Center(new string('*', 30));
+            Center("Press [ENTER] to return back.");
+            Center(new string('*', 30));
+            Console.WriteLine();
+            Console.WriteLine();
+
+            player.EquipNewArmor(armors[actionChoice - 1]);
+            Center($"You have successfully equiped {armors[actionChoice - 1].ReturnItemName()}! ");
             while (Console.ReadKey().Key != ConsoleKey.Enter) { }
         }
 
