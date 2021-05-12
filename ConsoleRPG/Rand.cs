@@ -2,6 +2,7 @@
 
 namespace ConsoleRPG
 {
+    [Serializable]
     public class Rand : Random
     {
         private static Rand _instant;

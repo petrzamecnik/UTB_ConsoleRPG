@@ -2,6 +2,7 @@
 
 namespace ConsoleRPG
 {
+    [Serializable]
     public static class BetterConsole
     {
         
@@ -72,6 +73,30 @@ namespace ConsoleRPG
                     
             };
             Console.WriteLine(input.PadLeft(spaces));
+            Console.ResetColor();
+            //Console.ForegroundColor = ConsoleColor.Yellow;
+        }
+        
+        public static void CenterColWrite(string input, string colorName)
+        {
+            var screenWidth = Console.WindowWidth;
+            var stringWidth = input.Length;
+            var spaces = (screenWidth / 2) + (stringWidth / 2);
+            colorName = colorName.ToLower();
+
+            Console.ForegroundColor = colorName switch
+            {
+                "yellow" => ConsoleColor.Yellow,
+                "darkyellow"=>ConsoleColor.DarkYellow,
+                "red" => ConsoleColor.Red,
+                "darkgreen" => ConsoleColor.DarkGreen,
+                "blue" => ConsoleColor.Blue,
+                "cyan" => ConsoleColor.Cyan,
+                "white" => ConsoleColor.White,
+                _ => Console.ForegroundColor
+                    
+            };
+            Console.Write(input.PadLeft(spaces));
             Console.ResetColor();
             //Console.ForegroundColor = ConsoleColor.Yellow;
         }

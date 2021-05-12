@@ -7,8 +7,11 @@ using static ConsoleRPG.BetterConsole;
 
 namespace ConsoleRPG.Characters
 {
-    public class Player: Character
+    
+    [Serializable]
+    public class Player: Character 
     {
+
         //private Inventory Inventory = new Inventory();
         
         

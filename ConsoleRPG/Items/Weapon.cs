@@ -2,6 +2,7 @@
 
 namespace ConsoleRPG.Items
 {
+    [Serializable]
     public class Weapon : Item
     {
         private int BonusAttack { get; set; }

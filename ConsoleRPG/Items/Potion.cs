@@ -1,5 +1,9 @@
-﻿namespace ConsoleRPG.Items
+﻿using System;
+
+namespace ConsoleRPG.Items
 {
+    
+    [Serializable]
     public class Potion : Item
     {
         private int HealthRegenAmount { get; set; }

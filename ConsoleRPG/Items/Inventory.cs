@@ -1,9 +1,9 @@
-﻿
-
+﻿using System;
 using System.Collections.Generic;
 
 namespace ConsoleRPG.Items
 {
+    [Serializable]
     public class Inventory
     {
         

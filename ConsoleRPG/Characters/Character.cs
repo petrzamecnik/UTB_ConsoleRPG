@@ -4,6 +4,8 @@ using ConsoleRPG.Items;
 
 namespace ConsoleRPG.Characters
 {
+    
+    [Serializable]
     public abstract class Character : IComparable<Character>
     {
         public Inventory Inventory { get; set; }

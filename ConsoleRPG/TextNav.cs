@@ -46,14 +46,14 @@ namespace ConsoleRPG
             Console.WriteLine();
             Center(new string('-', 30));
             Console.WriteLine();
-            Center($"Level: {player.ReturnCharacterLevel()}");
-            Center($"Health: {player.ReturnCharacterHealth()} / {player.ReturnCharacterMaxHealth()}");
-            Center($"Mana: {player.ReturnPlayerMana()} / {player.ReturnPlayerMaxMana()}");
+            CenterCol($"Level: {player.ReturnCharacterLevel()}", "cyan");
+            CenterCol($"Health: {player.ReturnCharacterHealth()} / {player.ReturnCharacterMaxHealth()}", "darkgreen");
+            CenterCol($"Mana: {player.ReturnPlayerMana()} / {player.ReturnPlayerMaxMana()}", "blue");
             Console.WriteLine();
             Center(new string('-', 30));
             Console.WriteLine();
-            Center($"Attack: {player.ReturnCharacterAttack()}");
-            Center($"Defense: {player.ReturnCharacterDefense()}");
+            CenterCol($"Attack: {player.ReturnCharacterAttack()}", "yellow");
+            CenterCol($"Defense: {player.ReturnCharacterDefense()}", "yellow");
             Console.WriteLine();
             Center(new string('-', 30));
             Console.WriteLine();
@@ -80,9 +80,9 @@ namespace ConsoleRPG
                 Console.Clear();
                 Console.WriteLine();
                 Console.WriteLine();
-                Center(new string('*', 30));
+                Center(new string('*', 60));
                 Center("Press [E] to continue to next enemy or [Q] to return back.");
-                Center(new string('*', 30));
+                Center(new string('*', 60));
                 Console.WriteLine();
                 Console.WriteLine();
                 Center(new string('-', 40));
@@ -115,7 +115,7 @@ namespace ConsoleRPG
             Center("Press [ENTER] to return back.");
             Center(new string('*', 30));
             Console.WriteLine();
-            Center("All characters sorted by power: ");
+            CenterCol("All characters sorted by power: ", "yellow");
             Console.WriteLine();
             Console.WriteLine();
             foreach (var character in allCharacters)
@@ -154,8 +154,8 @@ namespace ConsoleRPG
 
             var higherThanOneQuarter = ReturnAllCharacters(player, monsters)
                 .FindAll(ch => ch.ReturnCharacterDefense() > (averageDefence / 4));
-            
-            
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Clear();
             Console.WriteLine();
             Console.WriteLine();
@@ -204,6 +204,8 @@ namespace ConsoleRPG
             }
 
             while (Console.ReadKey().Key != ConsoleKey.Enter) { }
+
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public static void ViewInventory(Player player)
@@ -246,13 +248,15 @@ namespace ConsoleRPG
 
             if (!int.TryParse(actionChoiceInput, out var actionChoice))
             {
-                Center("*** Choice is not valid! ***");
+                CenterCol("*** Choice is not valid! ***", "red");
+
                 goto changeEquipment;
             }
 
             if (actionChoice > 4 || actionChoice < 0 )
             {
-                Center("*** Choice is not valid! ***");
+                CenterCol("*** Choice is not valid! ***", "red");
+
                 goto changeEquipment;
             }
 
@@ -488,8 +492,8 @@ namespace ConsoleRPG
             var weapons = player.Inventory.Items.OfType<Weapon>().ToList();
             foreach (var weapon in weapons)
             {
-                Center($"{weapon.ReturnItemName()}");
-                Center($"Bonus attack: {weapon.ReturnBonusAttack()}");
+                CenterCol($"{weapon.ReturnItemName()}", "yellow");
+                CenterCol($"Bonus attack: {weapon.ReturnBonusAttack()}", "darkyellow");
                 Center(new string('-', 30));
             }
         }
@@ -499,9 +503,9 @@ namespace ConsoleRPG
             var potions = player.Inventory.Items.OfType<Potion>().ToList();
             foreach (var potion in potions)
             {
-                Center($"{potion.ReturnItemName()}");
-                Center($"Health regen: {potion.ReturnHealthRegenAmount()}");
-                Center($"Mana regen: {potion.ReturnManaRegenAmount()}");
+                CenterCol($"{potion.ReturnItemName()}", "yellow");
+                CenterCol($"Health regen: {potion.ReturnHealthRegenAmount()}", "darkgreen");
+                CenterCol($"Mana regen: {potion.ReturnManaRegenAmount()}", "blue");
                 Center(new string('-', 30));
             }
         }
@@ -511,8 +515,8 @@ namespace ConsoleRPG
             var armors = player.Inventory.Items.OfType<Armor>().ToList();
             foreach (var armor in armors)
             {
-                Center($"{armor.ReturnItemName()}");
-                Center($"Bonus attack: {armor.ReturnBonusDefense()}");
+                CenterCol($"{armor.ReturnItemName()}", "yellow");
+                CenterCol($"Bonus armor: {armor.ReturnBonusDefense()}", "darkyellow");
                 Center(new string('-', 30));
             }
         }
@@ -522,8 +526,8 @@ namespace ConsoleRPG
             var helmets = player.Inventory.Items.OfType<Helmet>().ToList();
             foreach (var helmet in helmets)
             {
-                Center($"{helmet.ReturnItemName()}");
-                Center($"Bonus attack: {helmet.ReturnBonusDefense()}");
+                CenterCol($"{helmet.ReturnItemName()}", "yellow");
+                CenterCol($"Bonus armor: {helmet.ReturnBonusDefense()}", "darkyellow");
                 Center(new string('-', 30));
             }
         }
@@ -533,8 +537,8 @@ namespace ConsoleRPG
             var shields = player.Inventory.Items.OfType<Shield>().ToList();
             foreach (var shield in shields)
             {
-                Center($"{shield.ReturnItemName()}");
-                Center($"Bonus attack: {shield.ReturnBonusDefense()}");
+                CenterCol($"{shield.ReturnItemName()}", "yellow");
+                CenterCol($"Bonus armor: {shield.ReturnBonusDefense()}", "darkyellow");
                 Center(new string('-', 30));
             }
         }

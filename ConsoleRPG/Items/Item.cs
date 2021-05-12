@@ -1,8 +1,8 @@
-﻿
-
+﻿using System;
 
 namespace ConsoleRPG.Items
 {
+    [Serializable]
     public class Item
     {
         protected string Name { get; set; }

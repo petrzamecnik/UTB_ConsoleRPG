@@ -1,5 +1,8 @@
-﻿namespace ConsoleRPG.Items
+﻿using System;
+
+namespace ConsoleRPG.Items
 {
+    [Serializable]
     public class Armor : Item
     {
         private int BonusDefense { get; set; }
