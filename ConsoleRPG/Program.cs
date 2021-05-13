@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -11,21 +9,16 @@ using System.Threading;
 using ConsoleRPG.Characters;
 using ConsoleRPG.Items;
 using static ConsoleRPG.BetterConsole;
-using CONNECTDATA = System.Runtime.InteropServices.ComTypes.CONNECTDATA;
 
 
 namespace ConsoleRPG
 {
-    internal class Program
+    internal static class Program
     {
-        
-        
-        
+ 
         // TODO: Tidy up code
         // TODO: Implement enemy battle logic
-        // TODO: Make own exceptions
         // TODO: Log Battles
-        // TODO: Implement save / load
         // TODO: Implement more actions for player ( shop, crafting? )
         
         public static event Action<Character, Character> EnemyChanged;
@@ -33,6 +26,7 @@ namespace ConsoleRPG
         public static void Main(string[] args)
         {
             SetupConsole();
+            
             // weapons
             var placeHolderWeapon = new Weapon("Empty", 0, 0);
             var woodenSword = new Weapon("Wooden Sword", 0, 10);
@@ -103,8 +97,6 @@ namespace ConsoleRPG
                 armorOfGreatProtector, dragonScaleArmor
             };
             
-
-            
             var rand = Rand.Instant;
             ConsoleHelper.SetCurrentFont(default, 20);
             Monster enemy = null;
@@ -119,28 +111,30 @@ namespace ConsoleRPG
             }
             catch
             {
-                throw new InvalidCharacternameException("error");
+                throw new InvalidCharacternameException();
             }
 
             
-            
-            
-
             // Creation of player's character
             var player = new Player(heroName, 1, 120, 120, 20, 10, true,
                 0, new Inventory(new List<Item>()), 100, 100, 0,
                 100, placeHolderWeapon, placeHolderShield, placeHolderArmor, placeHolderHelmet, false);
             
+            // add starting item to character
             player.Inventory.AddItem(woodenSword);
             player.Inventory.AddItem(smallHealthPotion);
             player.Inventory.AddItem(smallManaPotion);
-            
-            
 
+            // create new list of monsters
             var monsters = CreateMonsterList(player, rand, items1To5, items6To10, items11To20);
             
-            
             // game start
+            PlayerActions(player, monsters, rand, null, items1To5, items6To10, items11To20);
+        }
+
+        private static void PlayerActions(Player player, List<Monster> monsters, Rand rand, Monster enemy,
+            List<Item> items1To5, List<Item> items6To10, List<Item> items11To20)
+        {
             gameStart:
             const int maxNumberOfActions = 9;
             Console.Clear();
@@ -155,7 +149,6 @@ namespace ConsoleRPG
             Console.WriteLine("9 - Save Game");
             Console.Write("Choose your next action! --> ");
             
-
             try
             {
                 enemy = monsters[rand.Next(0, monsters.Count - 1)];
@@ -166,19 +159,22 @@ namespace ConsoleRPG
                 monsters = RiseNewMonsters(player, rand, items1To5, items6To10, items11To20);
                 goto gameStart;
             }
-            
 
             // switching actions
             var actionChoiceInput = Console.ReadLine();
             if (!int.TryParse(actionChoiceInput, out var actionChoice))
             {
-                Console.WriteLine("*** Choice is not valid! ***");
+                Console.Clear();
+                Col("*** Choice is not valid! ***","red");
+                Thread.Sleep(1000);
                 goto gameStart;
             }
 
             if (actionChoice > maxNumberOfActions || actionChoice <= 0)
             {
-                Console.WriteLine("*** Choice is not valid! ***");
+                Console.Clear();
+                Col("*** Choice is not valid! ***","red");
+                Thread.Sleep(1000);
                 goto gameStart;
             }
             
@@ -189,6 +185,8 @@ namespace ConsoleRPG
                     player.SetRunningAwayState(false);
                     Console.WriteLine();
                     Console.WriteLine();
+                    
+                    // call event if enemy has changed
                     EnemyChanged = WriteNewMonster;
                     EnemyChanged?.Invoke(player, enemy);
                     Battle(player, enemy, rand, monsters);
@@ -219,14 +217,12 @@ namespace ConsoleRPG
                     goto gameStart;
                     
                 case 8:
-                    player = LoadGame();
+                    player = LoadGame(player, monsters, rand, enemy, items1To5, items6To10, items11To20);
                     goto gameStart;
                     
                 case 9:
                     SaveGame(player);
                     goto gameStart;
-                    
-
             }
         }
 
@@ -235,6 +231,7 @@ namespace ConsoleRPG
             Console.Clear();
             saveGame:
 
+            // ask for save name
             CenterColWrite("Enter save name: ", "yellow");
             var saveName = Console.ReadLine();
             saveName = "save - " + saveName + ".txt";
@@ -245,14 +242,12 @@ namespace ConsoleRPG
                 goto saveGame;
             }
 
+            // craete new file, then close it so it is available for serialize
             File.Create(saveName).Close();
-            
-            
+
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream("C:\\Users\\petrz\\RiderProjects\\ConsoleRPG\\ConsoleRPG\\bin\\Debug\\" + saveName,
                 FileMode.Create, FileAccess.Write);
-
-
             
             formatter.Serialize(stream, player);
             stream.Close();
@@ -262,13 +257,16 @@ namespace ConsoleRPG
             Thread.Sleep(2000);
         }
         
-        private static Player LoadGame()
+        private static Player LoadGame(Player player, List<Monster> monsters, Rand rand, Monster enemy,
+            List<Item> items1To5, List<Item> items6To10, List<Item> items11To20)
         {
-            loadGame:
             Console.Clear();
+            loadGame:
+            // get file paths to saves
             var filePaths = Directory.GetFiles("C:\\Users\\petrz\\RiderProjects\\ConsoleRPG\\ConsoleRPG\\bin\\Debug\\",
                 "save - *.txt");
 
+            // get file names from file path and add them to list
             var fileNames = filePaths.Select(filePath => Path.GetFileName(filePath)).ToList();
 
             var fileIndex = 0;
@@ -279,11 +277,18 @@ namespace ConsoleRPG
             }
 
             CenterCol("Choose which save to load [1, 2, 3 ... ], [0] to return", "yellow");
+            CenterColWrite(" --> ", "yellow");
             var actionChoice = Convert.ToInt32(Console.ReadLine());
+
+            if (actionChoice > fileIndex + 1 || actionChoice < 0)
+            {
+                CenterCol($"Choice is not valid!", "red");
+                goto loadGame;
+            }
 
             if (actionChoice == 0)
             {
-                //return null;
+                PlayerActions(player, monsters, rand, enemy, items1To5, items6To10, items11To20);
             }
 
             try
@@ -292,21 +297,21 @@ namespace ConsoleRPG
                 Stream stream = new FileStream(filePaths[actionChoice - 1],
                     FileMode.Open, FileAccess.Read);
 
-                var player = (Player)formatter.Deserialize(stream);
+                var newPlayer = (Player)formatter.Deserialize(stream);
                 stream.Close();
 
-                CenterCol($"Loading save: {fileNames[actionChoice]}", "cyan");
+                CenterCol($"Loading save: {fileNames[actionChoice - 1]}", "cyan");
                 Center(player.ReturnCharacterName());
                 Thread.Sleep(2000);
-                return player;
+                return newPlayer;
             }
-            catch
+            catch (SaveNotLoadedProperlyException e)
             {
-                throw new SaveNotLoadedProperlyException();
+                Console.WriteLine(e);
+                throw;
             }
-            
         }
-
+/*
         private static void GameSetupController(Player player)
         {
             gameSetupController:
@@ -342,11 +347,8 @@ namespace ConsoleRPG
             }
         }
         
-        
+*/
 
-        
-
-        public static Exception InvalidCharacternameException { get; set; }
 
         private static void WriteNewMonster(Character player, Character enemy)
         {
@@ -423,14 +425,14 @@ namespace ConsoleRPG
                 {
                     Console.Clear();
                     Center("Starting a new game!");
-                    System.Threading.Thread.Sleep(3000);
+                    Thread.Sleep(3000);
                     Main(null);
                 }
                 else
                 {
                     Console.Clear();
                     Center("What a COWARD you are! ...");
-                    System.Threading.Thread.Sleep(3000);
+                    Thread.Sleep(3000);
                     Environment.Exit(1);
                     
                 }
@@ -439,7 +441,7 @@ namespace ConsoleRPG
             // get exp, level up, remove monster from list
             if (!actualEnemy.IsAlive())
             {
-                System.Threading.Thread.Sleep(1500);
+                Thread.Sleep(1500);
                 Console.Clear();
                 CenterCol("!CONGRATULION!", "cyan");
                 CenterCol("Monster has been slain!", "cyan");
@@ -448,7 +450,7 @@ namespace ConsoleRPG
                 Center($"Experience gained: {Convert.ToInt32(Math.Floor(actualEnemy.ReturnCharacterMaxHealth() * 0.6))}");
                 player.TryToLevelUp();
                 monsters.Remove(actualEnemy);
-                System.Threading.Thread.Sleep(3000);
+                Thread.Sleep(3000);
                 
             }
         }
@@ -599,7 +601,7 @@ namespace ConsoleRPG
         public static List<Character> ReturnAllCharacters(Player player, List<Monster> monsters)
         {
             var allCharacters = new List<Character> {player};
-            allCharacters.AddRange(monsters.Cast<Character>());
+            allCharacters.AddRange(monsters);
 
             return allCharacters;
         }
