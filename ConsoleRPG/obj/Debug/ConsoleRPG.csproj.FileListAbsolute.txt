@@ -1,0 +1,7 @@
+C:\Users\petrz\RiderProjects\ConsoleRPG\ConsoleRPG\bin\Debug\ConsoleRPG.exe
+C:\Users\petrz\RiderProjects\ConsoleRPG\ConsoleRPG\bin\Debug\ConsoleRPG.pdb
+C:\Users\petrz\RiderProjects\ConsoleRPG\ConsoleRPG\obj\Debug\ConsoleRPG.csprojAssemblyReference.cache
+C:\Users\petrz\RiderProjects\ConsoleRPG\ConsoleRPG\obj\Debug\ConsoleRPG.csproj.CoreCompileInputs.cache
+C:\Users\petrz\RiderProjects\ConsoleRPG\ConsoleRPG\obj\Debug\ConsoleRPG.exe
+C:\Users\petrz\RiderProjects\ConsoleRPG\ConsoleRPG\obj\Debug\ConsoleRPG.pdb
+C:\Users\petrz\RiderProjects\ConsoleRPG\ConsoleRPG\bin\Debug\monster_names.txt
